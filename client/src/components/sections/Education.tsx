@@ -3,11 +3,6 @@ import { GraduationCap } from "lucide-react";
 export default function Education() {
   const education = [
     {
-      degree: "MSc – Data Analytics",
-      institution: "Dunster Business School, Switzerland",
-      year: "Nov 2025"
-    },
-    {
       degree: "MSc – International Business, Finance & Economics",
       institution: "University of East Anglia, Norwich, UK",
       year: "Sep 2023 – Sep 2024"
