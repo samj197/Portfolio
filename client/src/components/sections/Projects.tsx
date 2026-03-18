@@ -20,8 +20,11 @@ export default function Projects() {
       icon: <Presentation className="w-6 h-6" />,
       bullets: [
         "Tracked digital campaign ROI using Google Analytics and Excel dashboards.",
-        "Reduced marketing spend by 15% while maintaining lead generation volume."
-      ]
+        "Reduced marketing spend by 15% while maintaining lead generation volume.",
+        "See interactive Portfolio section below for a detailed case study."
+      ],
+      link: "#portfolio-case-study",
+      linkText: "View Interactive Dashboard"
     },
     {
       title: "Revenue Forecasting Model for Retail Client",
@@ -65,9 +68,18 @@ export default function Projects() {
               {project.link && (
                 <a 
                   href={project.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  target={project.link.startsWith('#') ? "_self" : "_blank"} 
+                  rel={project.link.startsWith('#') ? "" : "noopener noreferrer"}
                   className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-white transition-colors py-2 px-4 rounded-lg bg-background/5 border border-primary-foreground/10 hover:bg-accent/20 w-fit"
+                  onClick={(e) => {
+                    if (project.link.startsWith('#')) {
+                      e.preventDefault();
+                      const element = document.querySelector(project.link);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }
+                  }}
                 >
                   <FileText className="w-4 h-4" />
                   {project.linkText}

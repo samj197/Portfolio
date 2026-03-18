@@ -4,7 +4,7 @@ import {
   CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, 
   Cell
 } from "recharts";
-import { ChevronRight, Target, Lightbulb, CheckCircle2, TrendingUp, BarChart3 } from "lucide-react";
+import { Target, Lightbulb, CheckCircle2, TrendingUp, BarChart3 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -55,7 +55,7 @@ export default function Portfolio() {
   };
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-8" id="portfolio-case-study">
       <h2 className="text-3xl font-bold text-foreground inline-flex items-center gap-3">
         <span className="w-8 h-1 bg-accent rounded-full"></span>
         Portfolio & Case Studies
@@ -173,8 +173,8 @@ export default function Portfolio() {
                           <YAxis yAxisId="right" orientation="right" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} axisLine={false} tickLine={false} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          <Bar yAxisId="left" dataKey="spend" name="Spend ($)" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                          <Line yAxisId="right" type="monotone" dataKey="roi" name="ROI (%)" stroke="hsl(var(--accent))" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                          <Bar yAxisId="left" dataKey="spend" name="Spend ($)" fill="#1e3a8a" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                          <Line yAxisId="right" type="monotone" dataKey="roi" name="ROI (%)" stroke="#ea580c" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: "#fff" }} activeDot={{ r: 6 }} />
                         </ComposedChart>
                       </ResponsiveContainer>
                     </div>
@@ -193,8 +193,8 @@ export default function Portfolio() {
                         <AreaChart data={spendVsRoiData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0}/>
+                              <stop offset="5%" stopColor="#059669" stopOpacity={0.4}/>
+                              <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
@@ -202,7 +202,7 @@ export default function Portfolio() {
                           <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} axisLine={false} tickLine={false} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          <Area type="monotone" dataKey="leads" name="Total Leads" stroke="hsl(var(--accent))" strokeWidth={3} fillOpacity={1} fill="url(#colorLeads)" />
+                          <Area type="monotone" dataKey="leads" name="Total Leads" stroke="#059669" strokeWidth={3} fillOpacity={1} fill="url(#colorLeads)" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -234,8 +234,8 @@ export default function Portfolio() {
                         <YAxis type="category" dataKey="name" tick={{ fill: 'hsl(var(--foreground))', fontSize: 13, fontWeight: 500 }} axisLine={false} tickLine={false} width={150} />
                         <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--secondary))', opacity: 0.4}} />
                         <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-                        <Bar dataKey="conversionRate" name="Conversion Rate (%)" fill="hsl(var(--accent))" radius={[0, 4, 4, 0]} barSize={24} />
-                        <Bar dataKey="costPerLead" name="Cost per Lead ($)" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={24} />
+                        <Bar dataKey="conversionRate" name="Conversion Rate (%)" fill="#0284c7" radius={[0, 4, 4, 0]} barSize={24} />
+                        <Bar dataKey="costPerLead" name="Cost per Lead ($)" fill="#db2777" radius={[0, 4, 4, 0]} barSize={24} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
