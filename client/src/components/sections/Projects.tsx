@@ -1,4 +1,4 @@
-import { Lightbulb, Presentation, LineChart } from "lucide-react";
+import { Lightbulb, Presentation, LineChart, FileText } from "lucide-react";
 
 export default function Projects() {
   const projects = [
@@ -10,7 +10,9 @@ export default function Projects() {
         "Scrutinized the correlation between crude oil prices and forex rates for oil-exporting and importing nations.",
         "Applied time-series analysis using Excel, SPSS, and Power BI for trend and volatility evaluation.",
         "Delivered insights to support macroeconomic policy and hedging strategy development."
-      ]
+      ],
+      link: "/dissertation.pdf",
+      linkText: "Read Dissertation"
     },
     {
       title: "Campaign ROI Tracking & Budget Optimization",
@@ -45,13 +47,13 @@ export default function Projects() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           {projects.map((project, index) => (
-            <div key={index} className="bg-background/10 backdrop-blur-md rounded-2xl p-6 border border-primary-foreground/10 hover:bg-background/20 transition-colors">
+            <div key={index} className="bg-background/10 backdrop-blur-md rounded-2xl p-6 border border-primary-foreground/10 hover:bg-background/20 transition-colors flex flex-col h-full">
               <div className="w-12 h-12 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-6">
                 {project.icon}
               </div>
               <h3 className="text-xl font-bold mb-1 leading-tight">{project.title}</h3>
               <p className="text-accent text-sm font-medium mb-4">{project.subtitle}</p>
-              <ul className="space-y-2">
+              <ul className="space-y-2 flex-grow mb-6">
                 {project.bullets.map((bullet, i) => (
                   <li key={i} className="flex items-start gap-2 text-primary-foreground/80 text-sm">
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
@@ -59,6 +61,18 @@ export default function Projects() {
                   </li>
                 ))}
               </ul>
+              
+              {project.link && (
+                <a 
+                  href={project.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-white transition-colors py-2 px-4 rounded-lg bg-background/5 border border-primary-foreground/10 hover:bg-accent/20 w-fit"
+                >
+                  <FileText className="w-4 h-4" />
+                  {project.linkText}
+                </a>
+              )}
             </div>
           ))}
         </div>
