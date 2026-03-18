@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download, Mail, Linkedin, MapPin, Phone } from "lucide-react";
-import profileImage from "@/assets/profile-placeholder.png";
+import profileImage from "@/assets/profile-photo.png";
 import heroBg from "@/assets/hero-bg.png";
 
 export default function Hero() {
@@ -35,42 +35,48 @@ export default function Hero() {
                 Samvid Jadhav
               </h1>
               <h2 className="text-xl sm:text-2xl font-medium text-muted-foreground">
-                FMCG Area Sales Manager & Business Development Specialist
+                Business Development, Data & Marketing Professional
               </h2>
             </div>
             
             <p className="text-lg max-w-2xl mx-auto lg:mx-0 text-muted-foreground">
-              Driving revenue growth, scaling distribution channels, and leading high-performing sales teams across domestic and international markets.
+              Results-driven professional with proven expertise in business intelligence, client acquisition, market research, and sales operations.
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-medium text-muted-foreground pt-2">
               <div className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-accent" />
-                <span>Mumbai, India</span>
+                <span>Norwich, NR2 3JY</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Phone className="w-4 h-4 text-accent" />
-                <span>+91 9876543210</span>
+                <span>+44 7375 338401 & +91 8850051372</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Mail className="w-4 h-4 text-accent" />
-                <span>contact@example.com</span>
+                <span>sam.j1397@gmail.com</span>
               </div>
             </div>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
-              <Button size="lg" className="gap-2 font-semibold">
-                <Download className="w-4 h-4" />
-                Download Resume
-              </Button>
-              <Button size="lg" variant="outline" className="gap-2 bg-background/50 backdrop-blur-md">
-                <Mail className="w-4 h-4" />
-                Contact Me
-              </Button>
-              <Button size="lg" variant="ghost" className="gap-2 bg-background/50 backdrop-blur-md">
-                <Linkedin className="w-4 h-4 text-[#0A66C2]" />
-                LinkedIn
-              </Button>
+              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="gap-2 font-semibold">
+                  <Download className="w-4 h-4" />
+                  Download Resume
+                </Button>
+              </a>
+              <a href="mailto:sam.j1397@gmail.com">
+                <Button size="lg" variant="outline" className="gap-2 bg-background/50 backdrop-blur-md">
+                  <Mail className="w-4 h-4" />
+                  Contact Me
+                </Button>
+              </a>
+              <a href="https://www.linkedin.com/in/samvid-jadhav-130297?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="ghost" className="gap-2 bg-background/50 backdrop-blur-md">
+                  <Linkedin className="w-4 h-4 text-[#0A66C2]" />
+                  LinkedIn
+                </Button>
+              </a>
             </div>
           </div>
 

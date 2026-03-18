@@ -1,18 +1,18 @@
 import { CheckCircle2 } from "lucide-react";
 
 const skills = [
-  "FMCG Sales & Distribution",
-  "International Market Expansion",
-  "B2B Relationship Management",
-  "Key Account Management",
-  "Sales Strategy & Planning",
-  "New Product Launches",
-  "Revenue & Profit Growth",
-  "Team Leadership & Training",
-  "Export Market Research",
-  "Channel Partner Development",
-  "Trade Marketing",
-  "Sales Data Analysis"
+  "Data & Business Analysis",
+  "Microsoft Excel & Power BI",
+  "SQL (Basics) & Google Analytics",
+  "Lead Generation & Client Acquisition",
+  "CRM (Salesforce, Zoho, HubSpot)",
+  "Digital & Content Marketing",
+  "Campaign ROI Tracking",
+  "Market Research & Insights",
+  "Supply Chain Optimization",
+  "P&L & Strategic Planning",
+  "Forecasting & Team Leadership",
+  "Proposal Development"
 ];
 
 export default function CoreCompetencies() {
@@ -21,7 +21,7 @@ export default function CoreCompetencies() {
       <div className="space-y-8">
         <h2 className="text-3xl font-bold text-foreground inline-flex items-center gap-3">
           <span className="w-8 h-1 bg-accent rounded-full"></span>
-          Core Competencies
+          Core Competencies & Skills
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">

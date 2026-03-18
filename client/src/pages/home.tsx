@@ -2,7 +2,8 @@ import Hero from "@/components/sections/Hero";
 import Summary from "@/components/sections/Summary";
 import CoreCompetencies from "@/components/sections/CoreCompetencies";
 import Experience from "@/components/sections/Experience";
-import WhyHireMe from "@/components/sections/WhyHireMe";
+import Education from "@/components/sections/Education";
+import Projects from "@/components/sections/Projects";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
@@ -13,7 +14,8 @@ export default function Home() {
         <Summary />
         <CoreCompetencies />
         <Experience />
-        <WhyHireMe />
+        <Projects />
+        <Education />
       </main>
       <Footer />
     </div>

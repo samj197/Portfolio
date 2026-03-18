@@ -3,26 +3,55 @@ import { Briefcase } from "lucide-react";
 export default function Experience() {
   const experiences = [
     {
-      title: "Area Sales Manager",
-      company: "Leading FMCG Company",
-      period: "2020 - Present",
+      title: "Export Research Associate",
+      company: "EA Immigrations Ltd | Remote",
+      period: "May 2024 – Present",
       achievements: [
-        "Managed a territory generating $2.8M in quarterly revenue, consistently exceeding targets by 15%+.",
-        "Drove 40% year-over-year revenue growth through strategic channel expansion and optimized trade promotions.",
-        "Successfully launched 3 new product lines, generating $250K/month in incremental revenue within the first quarter.",
-        "Expanded retail distribution network by adding 200+ new high-volume retail touchpoints.",
-        "Led, trained, and mentored a team of 15 frontline sales executives, improving overall team productivity by 25%."
+        "Researched and identified UK importers and distributors for Indian engineering goods and bulk FMCG products.",
+        "Analysed import trends, HS codes, and pricing benchmarks to support market entry.",
+        "Generated and qualified B2B leads through trade databases and outreach.",
+        "Supported Indian exporters with buyer insights and go-to-market recommendations."
       ]
     },
     {
-      title: "Business Development Specialist (International Trade)",
-      company: "Independent Consultant / Export Advisory",
-      period: "2018 - 2020",
+      title: "Postgraduate Committee Chair",
+      company: "UEA Students' Union | Norwich, UK",
+      period: "Sep 2023 – Sep 2024",
       achievements: [
-        "Facilitated market entry for Indian FMCG and agricultural exporters into the highly competitive UK market.",
-        "Closed a landmark $100K international trade deal between an Indian supplier and a UK-based distributor.",
-        "Conducted comprehensive market research to identify viable buyer segments and compliance requirements for UK imports.",
-        "Negotiated contracts, managed logistics coordination, and ensured smooth end-to-end delivery of goods."
+        "Led postgraduate community engagement strategy and worked with the board on strategic initiatives.",
+        "Organized networking and professional development events for over 300 students.",
+        "Reviewed and approved funding proposals to support academic and social initiatives."
+      ]
+    },
+    {
+      title: "Business Development Consultant",
+      company: "Suvira Energy | Mumbai, India",
+      period: "Apr 2023 – Sep 2023",
+      achievements: [
+        "Negotiated and secured an international $100,000 deal in the fuel additive sector.",
+        "Identified new B2B opportunities across Singapore and Hong Kong maritime industries.",
+        "Drafted tenders and proposals, increasing client onboarding by 30%."
+      ]
+    },
+    {
+      title: "Cluster Manager",
+      company: "Mount Meru Millers | East Africa",
+      period: "May 2022 – Mar 2023",
+      achievements: [
+        "Managed export and B2B sales operations, achieving $2.8M in Q4 sales revenue.",
+        "Closed a $100K/month contract, increasing monthly revenue by 40%.",
+        "Implemented a go-to-market strategy for new edible oil products, generating $250K/month.",
+        "Optimized supply chain operations, resolving distribution inefficiencies."
+      ]
+    },
+    {
+      title: "Business Development Executive",
+      company: "Market Research Future | Pune, India",
+      period: "Mar 2021 – Apr 2022",
+      achievements: [
+        "Conduct competitive market analysis in ICT & Semiconductor domains for North American clients.",
+        "Created lead-focused marketing strategies, boosting report sales by $7,500.",
+        "Generated analytical insight reports for senior sales teams and delivered business presentations."
       ]
     }
   ];
@@ -48,7 +77,7 @@ export default function Experience() {
                   <h3 className="text-xl font-bold text-foreground">{exp.title}</h3>
                   <div className="text-primary font-medium">{exp.company}</div>
                 </div>
-                <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground">
+                <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground shrink-0 text-center">
                   {exp.period}
                 </span>
               </div>

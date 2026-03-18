@@ -13,16 +13,20 @@ export default function Footer() {
           
           <div className="text-center md:text-left">
             <h3 className="text-xl font-bold text-foreground">Samvid Jadhav</h3>
-            <p className="text-muted-foreground mt-1">Area Sales Manager & Business Development</p>
+            <p className="text-muted-foreground mt-1">Business Development & Data Analyst</p>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Linkedin className="w-5 h-5 text-[#0A66C2]" />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Mail className="w-5 h-5" />
-            </Button>
+            <a href="https://www.linkedin.com/in/samvid-jadhav-130297?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Linkedin className="w-5 h-5 text-[#0A66C2]" />
+              </Button>
+            </a>
+            <a href="mailto:sam.j1397@gmail.com">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Mail className="w-5 h-5" />
+              </Button>
+            </a>
             <Button 
               variant="outline" 
               size="icon" 
@@ -37,7 +41,7 @@ export default function Footer() {
         
         <div className="mt-8 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Samvid Jadhav. All rights reserved.</p>
-          <p>Available for Area Sales Manager and Business Development opportunities.</p>
+          <p>Available for Data Analysis, Business Analysis, or Business Development opportunities.</p>
         </div>
       </div>
     </footer>
