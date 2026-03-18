@@ -96,18 +96,18 @@ export default function Portfolio() {
         {/* Case Study 1: Mount Meru Millers */}
         <div className="glass-card rounded-3xl overflow-hidden border border-border">
           {/* Case Study Header */}
-          <div className="bg-secondary p-8 lg:p-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+          <div className="bg-red-950 p-8 lg:p-10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-red-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
             
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 border border-primary/20">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-semibold mb-6 border border-red-500/30">
                 <Globe className="w-4 h-4" />
                 FMCG Sales Leadership & Market Expansion
               </div>
-              <h3 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">
+              <h3 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">
                 Mount Meru Millers: Revenue & Distribution Growth
               </h3>
-              <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
+              <p className="text-red-100/80 text-lg max-w-3xl leading-relaxed">
                 Driving high-volume FMCG sales growth through strategic territory expansion, new product launches, and securing high-value B2B institutional contracts.
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function Portfolio() {
                   <Card className="border-border shadow-sm">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0 mt-1">
+                        <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0 mt-1">
                           <Briefcase className="w-5 h-5" />
                         </div>
                         <div>
@@ -150,7 +150,7 @@ export default function Portfolio() {
                   <Card className="border-border shadow-sm">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent shrink-0 mt-1">
+                        <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-600 shrink-0 mt-1">
                           <Target className="w-5 h-5" />
                         </div>
                         <div>
@@ -164,22 +164,22 @@ export default function Portfolio() {
                   </Card>
                 </div>
 
-                <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10">
+                <div className="bg-red-500/5 rounded-2xl p-6 border border-red-500/10">
                   <h4 className="text-xl font-bold mb-6 text-foreground flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-primary" />
+                    <TrendingUp className="w-5 h-5 text-red-500" />
                     Results & FMCG Impact
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="bg-background rounded-xl p-5 border border-border shadow-sm text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">$2.8M</div>
+                      <div className="text-3xl font-bold text-red-600 mb-1">$2.8M</div>
                       <div className="text-sm font-medium text-muted-foreground">Quarterly Revenue Achieved</div>
                     </div>
                     <div className="bg-background rounded-xl p-5 border border-border shadow-sm text-center">
-                      <div className="text-3xl font-bold text-accent mb-1">40%</div>
+                      <div className="text-3xl font-bold text-yellow-600 mb-1">40%</div>
                       <div className="text-sm font-medium text-muted-foreground">MoM Growth (Key Contract)</div>
                     </div>
                     <div className="bg-background rounded-xl p-5 border border-border shadow-sm text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">$250K</div>
+                      <div className="text-3xl font-bold text-red-600 mb-1">$250K</div>
                       <div className="text-sm font-medium text-muted-foreground">New Product Monthly Run-rate</div>
                     </div>
                   </div>
@@ -204,8 +204,8 @@ export default function Portfolio() {
                             <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                            <Bar dataKey="revenue" name="Revenue ($M)" fill="#0284c7" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                            <Line type="monotone" dataKey="target" name="Target ($M)" stroke="#ea580c" strokeWidth={3} dot={{ r: 4 }} />
+                            <Bar dataKey="revenue" name="Revenue ($M)" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                            <Line type="monotone" dataKey="target" name="Target ($M)" stroke="#eab308" strokeWidth={3} dot={{ r: 4 }} />
                           </ComposedChart>
                         </ResponsiveContainer>
                       </div>
@@ -227,9 +227,9 @@ export default function Portfolio() {
                             <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                            <Area type="monotone" dataKey="south" name="South ($K)" stackId="1" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.6} />
-                            <Area type="monotone" dataKey="north" name="North ($K)" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                            <Area type="monotone" dataKey="east" name="East ($K)" stackId="1" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
+                            <Area type="monotone" dataKey="south" name="South ($K)" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.6} />
+                            <Area type="monotone" dataKey="north" name="North ($K)" stackId="1" stroke="#f97316" fill="#f97316" fillOpacity={0.6} />
+                            <Area type="monotone" dataKey="east" name="East ($K)" stackId="1" stroke="#eab308" fill="#eab308" fillOpacity={0.6} />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
@@ -256,8 +256,8 @@ export default function Portfolio() {
                             <YAxis tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                            <Bar dataKey="core" name="Core Products ($K)" stackId="a" fill="#1e293b" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="newProduct" name="New Edible Oil ($K)" stackId="a" fill="#ea580c" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="core" name="Core Products ($K)" stackId="a" fill="#b91c1c" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="newProduct" name="New Edible Oil ($K)" stackId="a" fill="#eab308" radius={[4, 4, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -280,8 +280,8 @@ export default function Portfolio() {
                             <YAxis type="category" dataKey="name" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, fontWeight: 500 }} axisLine={false} tickLine={false} width={130} />
                             <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--secondary))', opacity: 0.4}} />
                             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                            <Bar xAxisId="bottom" dataKey="volume" name="Volume ($K)" fill="#0f766e" radius={[0, 4, 4, 0]} barSize={20} />
-                            <Line xAxisId="top" type="monotone" dataKey="growth" name="Growth (%)" stroke="#db2777" strokeWidth={3} dot={{ r: 4 }} />
+                            <Bar xAxisId="bottom" dataKey="volume" name="Volume ($K)" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={20} />
+                            <Line xAxisId="top" type="monotone" dataKey="growth" name="Growth (%)" stroke="#eab308" strokeWidth={3} dot={{ r: 4 }} />
                           </ComposedChart>
                         </ResponsiveContainer>
                       </div>
