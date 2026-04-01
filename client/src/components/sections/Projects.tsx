@@ -1,4 +1,4 @@
-import { Lightbulb, Presentation, LineChart, FileText } from "lucide-react";
+import { Lightbulb, Presentation, LineChart, FileText, Globe } from "lucide-react";
 
 export default function Projects() {
   const projects = [
@@ -13,6 +13,18 @@ export default function Projects() {
       ],
       link: "/dissertation.pdf",
       linkText: "Read Dissertation"
+    },
+    {
+      title: "The Post-Combustion Era: Interactive Report",
+      subtitle: "Energy Transition Analysis",
+      icon: <Globe className="w-6 h-6" />,
+      bullets: [
+        "Explored structural transformation of global energy landscape and EV displacement.",
+        "Analyzed sector vulnerabilities and projected residual demand for net-zero goals.",
+        "Created an interactive, data-driven narrative focusing on 2050 climate scenarios."
+      ],
+      link: "/interactive-report.html",
+      linkText: "View Interactive Report"
     },
     {
       title: "Campaign ROI Tracking & Budget Optimization",
@@ -48,7 +60,7 @@ export default function Projects() {
           Key Projects & Analytics
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           {projects.map((project, index) => (
             <div key={index} className="bg-background/10 backdrop-blur-md rounded-2xl p-6 border border-primary-foreground/10 hover:bg-background/20 transition-colors flex flex-col h-full">
               <div className="w-12 h-12 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-6">
