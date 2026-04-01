@@ -3,461 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Great Energy Divergence: 2026 Report</title>
+    <title>The Post-Combustion Era: Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --bg-color: #f8f9fa;
-            --text-color: #333;
-            --border-color: #ddd;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #faf9f6;
+            color: #292524;
         }
-
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem;
-            text-align: center;
+        h1, h2, h3, h4,.serif {
+            font-family: 'Lora', serif;
         }
-
-        header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.5rem;
-        }
-
-        header p {
-            margin: 0;
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Tab Navigation */
-        .tab {
-            overflow: hidden;
-            background-color: #f1f1f1;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 20px;
-            transition: 0.3s;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            flex-grow: 1;
-        }
-
-        .tab button:hover {
-            background-color: #e2e2e2;
-        }
-
-        .tab button.active {
-            background-color: white;
-            color: var(--secondary-color);
-            border-bottom: 3px solid var(--secondary-color);
-        }
-
-        /* Tab Content */
-        .tabcontent {
-            display: none;
-            padding: 2rem;
-            animation: fadeEffect 0.5s;
-        }
-
-        @keyframes fadeEffect {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
-
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-        }
-
-        h3 {
-            color: var(--secondary-color);
-            margin-top: 1.5rem;
-        }
-
-        p {
-            margin-bottom: 1rem;
-            text-align: justify;
-        }
-
-        .citation {
-            font-size: 0.85em;
-            color: #666;
-            vertical-align: super;
-        }
-
-        /* Tables */
-        table {
+       .chart-container {
+            position: relative;
             width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            background-color: white;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 45vh;
+            max-height: 400px;
         }
-
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            text-align: left;
+        @media (min-width: 768px) {
+           .chart-container {
+                height: 400px;
+            }
         }
-
-        th {
-            background-color: var(--primary-color);
+       .tab-btn.active {
+            background-color: #0f766e;
             color: white;
-            font-weight: 600;
+            border-color: #0f766e;
         }
-
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
+       .residual-block {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
-        tr:hover {
-            background-color: #f1f1f1;
+       .residual-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
-        .caption {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
+       .ai-shimmer {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
         }
-
-        /* Lists */
-        ul {
-            margin-bottom: 1.5rem;
-        }
-        
-        li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .tab button {
-                width: 100%;
-                text-align: left;
-                border-bottom: 1px solid #ccc;
-            }
-            .tab button.active {
-                border-bottom: 1px solid var(--border-color);
-                border-left: 4px solid var(--secondary-color);
-            }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
-<body>
+<body class="antialiased selection:bg-[#0f766e] selection:text-white">
 
-    <header>
-        <h1>The Great Energy Divergence</h1>
-        <p>Assessing the Displacement of Crude Oil by Electrification and Hydrogen in the Path to 2050</p>
+    <nav class="sticky top-0 z-50 bg-[#faf9f6]/90 backdrop-blur-md border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="font-bold text-xl tracking-tight text-[#0f766e] serif">Energy<span class="text-stone-800">Transition</span></div>
+                <div class="hidden md:flex space-x-8 text-sm font-semibold text-stone-600">
+                    <a href="#overview" class="hover:text-[#0f766e] transition-colors">Overview</a>
+                    <a href="#vulnerability" class="hover:text-[#0f766e] transition-colors">Sector Vulnerability</a>
+                    <a href="#displacement" class="hover:text-[#0f766e] transition-colors">Displacement Engine</a>
+                    <a href="#netzero" class="hover:text-[#0f766e] transition-colors">Net Zero Reality</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        <span class="uppercase tracking-widest text-sm font-bold text-[#c2410c] mb-4 block">Interactive Research Report</span>
+        <h1 class="text-5xl md:text-6xl font-bold text-stone-900 mb-6 leading-tight">Crude Oil Displacement <br>& The Net Zero Horizon</h1>
+        <p class="text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed">Explore the structural transformation of the global energy landscape. Understand how Electric Vehicles and Hydrogen are eroding crude oil demand, and discover why a complete 100% transition is unlikely by 2050.</p>
     </header>
 
-    <div class="container">
-        <div class="tab">
-            <button class="tablinks" onclick="openSection(event, 'Overview')" id="defaultOpen">Overview & Projections</button>
-            <button class="tablinks" onclick="openSection(event, 'EVs')">EV Impact</button>
-            <button class="tablinks" onclick="openSection(event, 'Hydrogen')">Hydrogen Solutions</button>
-            <button class="tablinks" onclick="openSection(event, 'Resilience')">Oil Resilience & Constraints</button>
-            <button class="tablinks" onclick="openSection(event, 'Timeline')">Transition Timeline</button>
-        </div>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-32">
 
-        <div id="Overview" class="tabcontent">
-            <h2>The Great Energy Divergence</h2>
-            <p>The global energy landscape in 2026 is defined by a profound and widening rift between two competing realities[cite: 1]. On one side, the established fossil fuel economy continues to demonstrate remarkable structural resilience, underpinned by a massive existing infrastructure and the burgeoning energy needs of emerging economies[cite: 2]. On the other, a rapidly accelerating low-emissions transition, driven by the dual engines of vehicle electrification and hydrogen technology, is beginning to exert unprecedented pressure on the historical dominance of crude oil[cite: 3].</p>
-            <p>This period has been punctuated by acute geopolitical volatility, most notably the tanker squeeze in the Strait of Hormuz during early 2026, which propelled crude oil prices toward the $100 mark and served as a catalyst for a "system break" in the internal combustion engine (ICE) industry[cite: 4]. This report examines the intricate interplay between these forces, analyzing the specific impact of electric vehicles (EVs) and hydrogen on crude oil demand, and evaluates the feasibility of a complete energy transition within the framework of the 2050 Net Zero goals[cite: 5].</p>
+        <section id="overview" class="scroll-mt-24">
+            <p class="text-lg text-stone-600 mb-8 max-w-4xl mx-auto text-center">This section outlines the core metrics defining the current state of global oil demand and the targets required for future sustainability. These key performance indicators establish the baseline for our analysis.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center">
+                    <div class="text-[#0369a1] text-5xl font-bold mb-2">103 <span class="text-2xl font-normal text-stone-400">mb/d</span></div>
+                    <div class="text-stone-800 font-semibold mb-1">Current Demand</div>
+                    <div class="text-sm text-stone-500">Global crude oil consumption (2023 baseline).</div>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center">
+                    <div class="text-[#15803d] text-5xl font-bold mb-2">1.8 <span class="text-2xl font-normal text-stone-400">mb/d</span></div>
+                    <div class="text-stone-800 font-semibold mb-1">Already Displaced</div>
+                    <div class="text-sm text-stone-500">Oil demand currently erased by global EV fleets.</div>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center">
+                    <div class="text-[#c2410c] text-5xl font-bold mb-2">2029</div>
+                    <div class="text-stone-800 font-semibold mb-1">Projected Peak</div>
+                    <div class="text-sm text-stone-500">Estimated year of structural global demand peak.</div>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 flex flex-col justify-center items-center text-center">
+                    <div class="text-[#0f766e] text-5xl font-bold mb-2">24 <span class="text-2xl font-normal text-stone-400">mb/d</span></div>
+                    <div class="text-stone-800 font-semibold mb-1">Net Zero Target</div>
+                    <div class="text-sm text-stone-500">Required residual demand to meet 2050 climate goals.</div>
+                </div>
+            </div>
+        </section>
 
-            <h3>The Paradigm Shift in Oil Demand Projections</h3>
-            <p>The central question facing global energy analysts is no longer whether oil demand will peak, but when it will peak and how sharp the subsequent decline will be[cite: 6]. This assessment is complicated by a fundamental disagreement between the world’s most influential energy organizations[cite: 7].</p>
-            <p>The International Energy Agency (IEA), through its World Energy Outlook 2025, maintains that the "Age of Electricity" is now irreversible, projecting that global oil demand will flatten by the end of the 2020s under the Stated Policies Scenario (STEPS) as clean energy technologies reach mass-market scale[cite: 8]. In contrast, the Organization of the Petroleum Exporting Countries (OPEC) argues that such projections are a "fantasy," instead forecasting that global oil demand will continue to expand, reaching 123 million barrels per day (mb/d) by 2050[cite: 9].</p>
-            <p>OPEC’s World Oil Outlook 2050 emphasizes that energy history is characterized by addition rather than subtraction [cite: 10]; the rise of coal did not eliminate wood, and the rise of oil did not eliminate coal[cite: 11]. From this perspective, renewables and EVs are seen as additions to the global mix that require a host of oil-based products for their own development and deployment[cite: 12]. The IEA, however, views the current transition as a structural decoupling, where the superior efficiency of electric motors—which convert over 80% of energy into motion compared to less than 25% for ICE engines—fundamentally alters the energy intensity of global GDP[cite: 13].</p>
+        <section id="vulnerability" class="scroll-mt-24">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-4xl text-stone-900 mb-6">The Vulnerability of Crude Oil</h2>
+                <p class="text-lg text-stone-600 leading-relaxed">To understand where oil demand will fall, we must understand where it is currently utilized. The transportation sector represents the absolute foundation of oil economics. Interact with the chart below to explore the specific vulnerabilities of each consumption sector to emerging technologies.</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-md border border-stone-100 p-8 lg:p-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="w-full">
+                        <div class="text-center text-sm font-semibold text-stone-500 mb-4 tracking-wider uppercase">Global Consumption by Sector</div>
+                        <div class="chart-container">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                        <div class="mt-6 flex justify-center">
+                            <button onclick="generateInsight('sector')" class="bg-[#0f766e]/10 text-[#0f766e] px-4 py-2 rounded-lg text-sm font-bold border border-[#0f766e]/20 hover:bg-[#0f766e]/20 transition-all">✨ Get AI Sector Analysis</button>
+                        </div>
+                    </div>
+                    
+                    <div id="sector-details" class="bg-[#faf9f6] p-8 rounded-2xl border border-stone-200 h-full flex flex-col justify-center min-h-[300px]">
+                        <div class="text-[#0f766e] text-sm font-bold uppercase tracking-wider mb-2">Interactive Analysis</div>
+                        <h3 class="text-2xl font-bold text-stone-900 mb-4 serif">Select a sector to explore</h3>
+                        <p class="text-stone-600">Click on any segment of the donut chart to the left. This panel will update with detailed qualitative insights regarding that sector's vulnerability to electrification and hydrogen alternatives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <div class="caption">Comparative Long-Term Global Oil Demand Scenarios [cite: 14]</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Organization</th>
-                        <th>Scenario</th>
-                        <th>2030 Projection (mb/d)</th>
-                        <th>2050 Projection (mb/d)</th>
-                        <th>Peak Year Forecast</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>IEA</td>
-                        <td>Net Zero Emissions (NZE)</td>
-                        <td>~77.0</td>
-                        <td>~24.0</td>
-                        <td>Already Passed</td>
-                    </tr>
-                    <tr>
-                        <td>IEA</td>
-                        <td>Stated Policies (STEPS)</td>
-                        <td>~104.0</td>
-                        <td>~93.0</td>
-                        <td>Late 2020s</td>
-                    </tr>
-                    <tr>
-                        <td>BNEF</td>
-                        <td>Economic Transition (ETS)</td>
-                        <td>~103.5</td>
-                        <td>~88.0</td>
-                        <td>2032</td>
-                    </tr>
-                    <tr>
-                        <td>OPEC</td>
-                        <td>Reference Case (WOO)</td>
-                        <td>113.3</td>
-                        <td>122.9</td>
-                        <td>No Peak Projected</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p><i>Data Source: [cite: 15]</i></p>
+        <section id="displacement" class="scroll-mt-24">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-4xl text-stone-900 mb-6">The Displacement Engine</h2>
+                <p class="text-lg text-stone-600 leading-relaxed">The transition is not uniform. Electric Vehicles (EVs) are currently leading the charge in light transit, while Hydrogen (H2) and its derivatives are slated to tackle heavy, long-haul applications later in the transition.</p>
+            </div>
 
-            <p>The implications of these dueling forecasts are profound for global capital allocation[cite: 16]. If the IEA’s NZE pathway is the accurate roadmap, then the $18.2 trillion in oil industry investment that OPEC claims is necessary through 2050 would represent a catastrophic misallocation of resources, potentially leading to a massive volume of stranded assets[cite: 17]. Conversely, if OPEC’s vision of resilient demand holds true, an under-investment in upstream oil supply could trigger chronic energy shortages and price shocks that would devastate the global economy, particularly in developing nations[cite: 18].</p>
-        </div>
+            <div class="bg-white rounded-3xl shadow-md border border-stone-100 p-8 lg:p-12">
+                <div class="chart-container mb-8">
+                    <canvas id="displacementChart"></canvas>
+                </div>
+                
+                <div class="flex justify-center mb-8">
+                    <button onclick="generateInsight('displacement')" class="bg-[#0369a1]/10 text-[#0369a1] px-4 py-2 rounded-lg text-sm font-bold border border-[#0369a1]/20 hover:bg-[#0369a1]/20 transition-all">✨ AI Trend Forecast</button>
+                </div>
 
-        <div id="EVs" class="tabcontent">
-            <h2>The Road Transport Tipping Point: EV Impact on Liquid Fuels</h2>
-            <p>Road transport is the primary battlefield for oil demand displacement, accounting for nearly 50% of global oil consumption[cite: 19]. In 2026, the industry is witnessing what disruptors call "replacement under pressure"[cite: 20]. The 140-year era of the internal combustion engine is not ending through a gentle, linear transition but through a rapid system break triggered by the superior economics and efficiency of electric mobility[cite: 21].</p>
+                <div class="border-t border-stone-100 pt-8 mt-4">
+                    <div class="text-center mb-6">
+                        <span class="text-sm font-bold text-stone-500 uppercase tracking-wider">Explore The Timeline</span>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 mb-8" id="timeline-controls">
+                        <button class="tab-btn active px-6 py-2 rounded-full border border-stone-300 font-semibold text-sm transition-colors" data-era="plateau">2024-2029: The Plateau</button>
+                        <button class="tab-btn px-6 py-2 rounded-full border border-stone-300 font-semibold text-sm transition-colors text-stone-600 hover:border-[#0f766e] hover:text-[#0f766e]" data-era="decline">2030-2038: Structural Decay</button>
+                        <button class="tab-btn px-6 py-2 rounded-full border border-stone-300 font-semibold text-sm transition-colors text-stone-600 hover:border-[#0f766e] hover:text-[#0f766e]" data-era="shift">2038-2045: Heavy Shift</button>
+                        <button class="tab-btn px-6 py-2 rounded-full border border-stone-300 font-semibold text-sm transition-colors text-stone-600 hover:border-[#0f766e] hover:text-[#0f766e]" data-era="material">2045-2050+: Material Era</button>
+                    </div>
 
-            <h3>The Collapse of Operating Costs and the EV Feedback Loop</h3>
-            <p>The momentum behind EVs is increasingly driven by the collapse in running costs[cite: 22]. By March 2026, real-world data indicates that EV operating costs have fallen to between 1.5 ¢ and 2.2 ¢ per kilometer, whereas popular ICE pickups and SUVs continue to cost between 16.7 ¢ and 25.6 ¢ per kilometer[cite: 23]. This tenfold advantage is even more pronounced for owners utilizing rooftop solar and smart charging, where costs can drop below 1 ¢ per kilometer[cite: 24]. This economic reality creates a powerful feedback loop: as ICE sales decline, the economies of scale for traditional automakers, dealer networks, and refueling infrastructure begin to erode, further accelerating the transition[cite: 25].</p>
-            <p>Despite this long-term trend, 2026 has been marked by a complex "EV winter" in advanced economies[cite: 26]. The expiration of major consumer tax credits in the United States at the end of 2025 led to a forecasted 15% contraction in US EV sales for 2026. Similarly, China, the world's largest market, is seeing growth slow to just 1% in 2026 due to the introduction of a new purchase tax and the reduction of long-standing subsidies[cite: 27]. This cooling of demand highlights a critical barrier: while the total cost of ownership (TCO) for an EV is often lower than for an ICE car, the high upfront purchase price remains a deterrent for the mass market[cite: 28].</p>
+                    <div id="era-description" class="max-w-3xl mx-auto text-center bg-[#faf9f6] p-6 rounded-xl border border-stone-200">
+                        <h4 class="text-xl font-bold text-stone-900 mb-2">The Plateau</h4>
+                        <p class="text-stone-600">EV adoption in China and Europe reaches critical mass. Global oil demand hits its structural peak around 2029.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <div class="caption">Global EV Market Penetration and Oil Displacement [cite: 29]</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>2024 Actual</th>
-                        <th>2025/26 Forecast</th>
-                        <th>2030 Projection</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Passenger EV Sales (Global)</td>
-                        <td>17.6 Million</td>
-                        <td>~22.0 Million</td>
-                        <td>39.0 Million</td>
-                    </tr>
-                    <tr>
-                        <td>EV Share of New Car Sales</td>
-                        <td>~18%</td>
-                        <td>25%</td>
-                        <td>>40%</td>
-                    </tr>
-                    <tr>
-                        <td>Oil Displacement (mb/d)</td>
-                        <td>~1.5</td>
-                        <td>~2.2</td>
-                        <td>>5.0</td>
-                    </tr>
-                    <tr>
-                        <td>Battery Pack Price (Global Avg)</td>
-                        <td>$100/kWh</td>
-                        <td><$90/kWh</td>
-                        <td>~$60/kWh</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p><i>Data Source: [cite: 30]</i></p>
+        <section id="netzero" class="scroll-mt-24">
+            <div class="max-w-3xl mb-12">
+                <h2 class="text-4xl text-stone-900 mb-6">Trajectory to Net Zero</h2>
+                <p class="text-lg text-stone-600 leading-relaxed">Achieving global climate targets requires a massive divergence from current trajectories. This section contrasts Business-as-Usual scenarios against the aggressive reductions required for Net Zero.</p>
+            </div>
 
-            <p>A second-order effect of this transition is the "bridge phase" expansion of plug-in hybrid electric vehicles (PHEVs)[cite: 31]. In 2026, PHEVs are seeing a sharp rise in sales as they remove the dual barriers of range anxiety and high upfront costs while allowing immediate displacement of traditional ICE vehicles even in regions where charging infrastructure remains patchy[cite: 32]. This suggests that the decline in crude oil demand for road transport will be sustained even if full battery electric vehicle (BEV) adoption faces temporary headwinds[cite: 33].</p>
-        </div>
+            <div class="bg-white rounded-3xl shadow-md border border-stone-100 p-8 lg:p-12 mb-12">
+                <div class="text-center text-sm font-semibold text-stone-500 mb-4 tracking-wider uppercase">Global Crude Demand Scenarios (mb/d)</div>
+                <div class="chart-container">
+                    <canvas id="scenarioChart"></canvas>
+                </div>
+                <div class="mt-6 flex justify-center">
+                    <button onclick="generateInsight('netzero')" class="bg-[#c2410c]/10 text-[#c2410c] px-4 py-2 rounded-lg text-sm font-bold border border-[#c2410c]/20 hover:bg-[#c2410c]/20 transition-all">✨ Explain Scenario Divergence</button>
+                </div>
+            </div>
 
-        <div id="Hydrogen" class="tabcontent">
-            <h2>Hydrogen: The Decarbonization Lever for Hard-to-Abate Sectors</h2>
-            <p>While battery electrification has largely won the battle for passenger transport, hydrogen is being positioned as the indispensable fuel for the "hard-to-abate" sectors—heavy-duty trucking, shipping, aviation, and heavy industry[cite: 34]. These sectors are characterized by energy density requirements and duty cycles that exceed the current capabilities of battery technology[cite: 35].</p>
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-3xl text-center font-bold text-stone-900 mb-8 serif">The Reality: The Residual 25%</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="residual-block bg-white p-8 rounded-2xl shadow-sm border-t-4 border-[#0369a1]">
+                        <h4 class="text-xl font-bold text-stone-900 mb-3">Petrochemicals</h4>
+                        <p class="text-stone-600 text-sm leading-relaxed">Demand for plastics, fertilizers, and pharmaceuticals continues to grow.</p>
+                    </div>
+                    <div class="residual-block bg-white p-8 rounded-2xl shadow-sm border-t-4 border-[#57534e]">
+                        <h4 class="text-xl font-bold text-stone-900 mb-3">Asphalt & Bitumen</h4>
+                        <p class="text-stone-600 text-sm leading-relaxed">Infrastructure development requires massive quantities of road surfacing materials.</p>
+                    </div>
+                    <div class="residual-block bg-white p-8 rounded-2xl shadow-sm border-t-4 border-[#c2410c]">
+                        <h4 class="text-xl font-bold text-stone-900 mb-3">Lubricants</h4>
+                        <p class="text-stone-600 text-sm leading-relaxed">High-performance machinery still rely on petroleum base stocks for energy density.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <h3>The Green vs. Blue Hydrogen Economic Barrier</h3>
-            <p>The adoption of hydrogen in 2026 is hindered by a significant cost gap between production methods[cite: 36]. Green hydrogen, produced via electrolysis using renewable electricity, remains the most expensive option, with costs ranging from $3.50 to $6.00 per kg[cite: 37]. Blue hydrogen, which utilizes natural gas with carbon capture and storage (CCS), is more competitive at $2.00 to $3.50 per kg but remains vulnerable to methane leaks and the volatile price of natural gas[cite: 38].</p>
+    </main>
 
-            <div class="caption">2026 Hydrogen Cost and Parity Projections [cite: 39]</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Hydrogen Type</th>
-                        <th>2026 Cost ($ per kg)</th>
-                        <th>Parity Target ($ per kg)</th>
-                        <th>Estimated Year for Parity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Grey (Fossil)</td>
-                        <td>$1.00 – $2.50</td>
-                        <td>Reference</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <td>Blue (Natural Gas + CCS)</td>
-                        <td>$2.00 – $3.50</td>
-                        <td><$2.00</td>
-                        <td>2030</td>
-                    </tr>
-                    <tr>
-                        <td>Green (Renewable)</td>
-                        <td>$3.50 – $6.00</td>
-                        <td>$1.00</td>
-                        <td>2035 - 2040</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p><i>Data Source: [cite: 40]</i></p>
-
-            <p>The technical challenges of scaling hydrogen technology are equally daunting[cite: 41]. Proton Exchange Membrane (PEM) electrolyzers, which are favored for their ability to handle the variable output of wind and solar power, rely on iridium—one of the rarest elements on Earth[cite: 42]. With the world only producing 250 kilograms of iridium annually, and PEM systems requiring 400kg per gigawatt of capacity, the industry faces a severe material bottleneck that could restrict green hydrogen growth by 2030 unless significant technological breakthroughs occur[cite: 43]. Furthermore, the round-trip efficiency of converting electricity to hydrogen and back remains low (18–46%), making it an expensive storage medium compared to pumped hydro or batteries[cite: 44].</p>
-
-            <h3>Sectoral Adoption in Heavy Transport</h3>
-            <ul>
-                <li><strong>Heavy-Duty Trucking:</strong> Despite the high purchase price—often two to three times that of diesel trucks—hydrogen fuel cell vehicles are entering commercial service[cite: 45]. In 2024 and 2025, companies like Nikola wholesaled over 200 hydrogen fuel cell trucks, targeting long-haul operations where batteries would occupy too much cargo space[cite: 46].</li>
-                <li><strong>Maritime Shipping:</strong> The shipping industry is exploring ammonia, a hydrogen carrier, as a primary future fuel[cite: 47]. Ammonia has 49% more energy per volume than liquid hydrogen, allowing for more traditional vessel configurations[cite: 48]. However, shipping remains a "price taker" in the fuel market, and its transition depends on the power sector first scaling up ammonia production to lower unit costs[cite: 49].</li>
-                <li><strong>Aviation:</strong> Hydrogen is being developed for regional and mid-range flight, but Sustainable Aviation Fuel (SAF) remains the dominant short-term lever, projected to provide 65% of the abatement needed by 2050. Hydrogen aircraft face a lengthy re-certification process and significant infrastructure challenges at airports[cite: 50].</li>
-            </ul>
-        </div>
-
-        <div id="Resilience" class="tabcontent">
-            <h2>The Resilience of Crude Oil: Petrochemicals and Non-Energy Uses</h2>
-            <p>A critical factor that the "complete transition" narrative often overlooks is the resilience of oil demand in non-energy applications[cite: 51]. While transport fuels are under threat, the demand for petrochemical feedstocks is surging[cite: 52]. In the IEA’s February 2026 report, petrochemical products accounted for more than half of the global oil demand gains for the year, while transport fuel growth slowed significantly[cite: 53].</p>
-
-            <h3>The Petrochemical "Last Stand"</h3>
-            <p>The global economy is fundamentally built on oil-derived materials[cite: 54]. From plastics and synthetic rubbers to fertilizers and specialized medical equipment, there are currently few viable at-scale alternatives to crude oil feedstocks[cite: 55]. BNEF’s Economic Transition Scenario indicates that while road fuel demand drops significantly through 2050, oil consumption for petrochemicals will see strong growth[cite: 56]. This "sectoral shift" means that even as we see an electrification of the car fleet, global refineries will pivot to maximize the production of high-value chemical precursors rather than gasoline and diesel[cite: 57].</p>
-
-            <h3>Aviation and Heavy Industry: The Persistence of Liquid Hydrocarbons</h3>
-            <p>Aviation remains another major bastion for oil[cite: 58]. Global passenger volumes are expected to reach a record 9.8 billion in 2026, and despite the growth of SAF, the sector’s energy demand by mid-century could be double the available supply of sustainable biofuels[cite: 59]. This suggests that fossil-based kerosene will remain a critical part of the aviation fuel mix well into the 2040s, providing a floor for oil demand[cite: 60].</p>
-
-            <h2>Physical Realities and Resource Bottlenecks: The "Hard Stuff"</h2>
-            <p>The feasibility of a complete energy transition by 2050 is increasingly being questioned on the grounds of physical and material constraints[cite: 61]. McKinsey Global Institute describes the transition as being in its "early stages," with only about 10 percent of the required deployment of low-emissions technologies achieved by 2024. Moving to a zero-carbon system requires the deployment of millions of new assets and the creation of entirely new supply chains for critical minerals[cite: 62].</p>
-
-            <h3>The Critical Minerals Supply Gap</h3>
-            <p>The shift from a fuel-intensive energy system to a mineral-intensive one creates new vulnerabilities[cite: 63]. A typical electric vehicle requires significantly more minerals than a conventional car, and the expansion of the global power grid to support electrification will require massive amounts of copper[cite: 64].</p>
-
-            <div class="caption">Projected Supply Shortfalls for Essential Minerals (2030-2040) [cite: 65]</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mineral</th>
-                        <th>NZE Demand Growth (2040 vs 2020)</th>
-                        <th>2030-2035 Supply Outlook</th>
-                        <th>Major Risk Factor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Lithium</td>
-                        <td>>8x</td>
-                        <td>Market Deficit by 2030s</td>
-                        <td>Refining Concentration (China)</td>
-                    </tr>
-                    <tr>
-                        <td>Copper</td>
-                        <td>2x</td>
-                        <td>30% Supply Shortfall by 2035</td>
-                        <td>Declining Ore Grades; Long Lead Times</td>
-                    </tr>
-                    <tr>
-                        <td>Graphite</td>
-                        <td>>5x</td>
-                        <td>Large Shortfall</td>
-                        <td>High Refining Concentration</td>
-                    </tr>
-                    <tr>
-                        <td>Cobalt</td>
-                        <td>~2x</td>
-                        <td>Deficit Possible</td>
-                        <td>DRC Political Stability</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p><i>Data Source: [cite: 66]</i></p>
-
-            <p>The IEA has warned that market concentration remains a severe risk [cite: 67]; a single country (China) currently leads the refining of 19 out of 20 strategic energy minerals[cite: 68]. Efforts to diversify these supply chains are moving slowly, raising concerns about future shortages and trade conflicts that could sharply slow the speed of the clean energy transition[cite: 69]. Furthermore, the introduction of export controls—such as China’s 2025 restrictions on tungsten, tellurium, and heavy rare earth elements—illustrates how critical minerals have become the "new oil" in terms of geopolitical leverage[cite: 70].</p>
-
-            <h3>The AI Energy Tax</h3>
-            <p>A new and unforeseen challenge to the energy transition is the explosive growth of power demand for data centers and artificial intelligence[cite: 71]. By 2035, the amount of electricity consumed by data centers is expected to triple, and while this represents less than 10% of total global demand growth, it is highly concentrated geographically[cite: 72]. In the United States, where more than 85% of this new capacity is being added, the sheer scale of uninterruptible power needed for AI training is forcing a rethink of energy choices[cite: 73]. This surge in demand may prolong the life of natural gas and even oil-fired peaking plants to ensure grid stability, as intermittent renewables struggle to provide the 24/7 reliability required by the AI sector[cite: 74].</p>
-        </div>
-
-        <div id="Timeline" class="tabcontent">
-            <h2>Regional Divergence: The Case of Emerging Economies</h2>
-            <p>The transition away from crude oil is unfolding at radically different speeds depending on geography[cite: 75]. Advanced economies are focused on decarbonization, while emerging markets are prioritized by energy access and economic development[cite: 76].</p>
-            <ul>
-                <li><strong>India: The Growth Engine:</strong> India is currently one of the fastest-growing economies in the world, with GDP growth expected to average 6.5% through 2027. This growth is driving a massive increase in power demand, which could rise by 200% by 2042. While India is committed to its Net Zero 2070 goal and has set a target of 500 GW of non-fossil capacity by 2030, its energy plans still assume an increase in coal capacity through 2032 to ensure energy security and grid stabilization[cite: 77]. For India, a "just energy transition" means balancing climate action with the need to safeguard the livelihoods of millions of workers in the coal and oil sectors[cite: 78].</li>
-                <li><strong>Southeast Asia and Africa: Leapfrogging vs. Entrenchment:</strong> In Southeast Asia, a trend known as the "EV leapfrog" is taking place[cite: 79]. Countries like Indonesia and Thailand are increasingly turning to EVs not just for climate goals, but for the strategic benefits of reduced fossil fuel imports and cleaner urban air[cite: 80]. In 2025, Indonesia's EV sales share reached 15%, overtaking the US[cite: 81]. However, in Sub-Saharan Africa, the challenge remains more fundamental: providing basic energy access to the 730 million people who still live without electricity[cite: 82]. The choice for Africa—developing its significant fossil resources along 20th-century lines or leapfrogging to clean energy—will determine if the world can stay within 1.5 °C or is pushed toward 3 °C of warming[cite: 83].</li>
-            </ul>
-
-            <h2>Transition Timeline: How Long Will it Take?</h2>
-            <p>The user's query asks how long a complete transition will take or if it is unlikely to happen aligning with Net Zero goals[cite: 84]. Based on the exhaustive research material, we can formulate a timeline of displacement[cite: 85].</p>
-            <ul>
-                <li><strong>Phase 1: Peak and Plateau (2025 – 2035):</strong> This decade marks the peak of fossil fuel demand in most scenarios except OPEC's[cite: 86]. The IEA projects peaks for coal before 2030, oil around 2030, and gas by 2035. During this period, EVs will displace over 10 million barrels of oil per day[cite: 87]. However, total demand will not crash; rather, it will enter a plateau as growth in emerging markets (India, Africa) offsets the declines in the OECD[cite: 88].</li>
-                <li><strong>Phase 2: Structural Decline (2035 – 2050):</strong> In the IEA’s Stated Policies Scenario, oil demand flattens but remains near 90 mb/d by 2050—far from the 24 mb/d required for Net Zero[cite: 89]. The transition in this phase depends on the commercialization of green hydrogen and CCS in hard-to-abate sectors[cite: 90]. BNEF’s ETS scenario projects a significant drop to 88 mb/d by 2050, driven by a halving of road transport demand[cite: 91].</li>
-                <li><strong>Phase 3: The Residual "Tail" (Post-2050):</strong> A "complete" transition—meaning zero fossil fuel use—is considered unlikely by 2050 by most realistic assessments[cite: 92]. The UK’s Climate Change Committee identifies an "ICE tail" of consumers who face the largest barriers (affordability and lack of home charging) and will continue to drive internal combustion vehicles well into the 2040s[cite: 93]. Furthermore, sectors like petrochemicals and aviation provide a "floor" of demand that current technologies cannot yet fully eliminate[cite: 94].</li>
-            </ul>
-
-            <h2>Conclusion: The Likelihood of a Complete Transition</h2>
-            <p>The impact of EVs and hydrogen on crude oil demand is structural and irreversible, but the prospect of a "complete" transition by 2050—one that aligns perfectly with a 1.5 °C Net Zero goal—is highly improbable[cite: 95]. The data suggests that we are moving toward a multi-polar energy system[cite: 96]. Road transport electrification is already achieving TCO parity and will likely eliminate the majority of light-duty oil demand by 2045. Hydrogen is proving its viability in heavy-duty pilots but faces a 10–20 year infrastructure and cost hurdle before it can meaningfully displace oil in shipping and industry[cite: 97].</p>
-            <p>However, the "physical realities" of the transition—the 30% supply shortfall in copper by 2035, the iridium bottleneck for green hydrogen, and the massive $18 trillion investment requirements—suggest that the energy system will retain a significant fossil fuel component through 2050. The IEA Net Zero pathway remains "narrow and extremely challenging," requiring a total transformation of global economies in just three decades[cite: 98].</p>
-            <p>Without a radical acceleration in critical mineral mining, grid modernization, and the scaling of synthetic fuels, the world is more likely heading toward 2.5–3 °C of warming, with oil demand remaining resilient in the petrochemical, aviation, and emerging market sectors[cite: 99]. A "complete" transition will likely take until the late 21st century, as the "hard stuff" of industrial and chemical decarbonization requires another several decades of innovation beyond the current 2050 horizon[cite: 100].</p>
+    <div id="ai-panel" class="fixed bottom-6 right-6 z-[100] w-80 md:w-96 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-stone-200 flex flex-col max-h-[500px]">
+            <div class="bg-[#0f766e] p-4 rounded-t-2xl flex justify-between items-center text-white">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl">✨</span>
+                    <span class="font-bold">AI Research Assistant</span>
+                </div>
+                <button onclick="toggleAIPanel()" class="text-white/80 hover:text-white">&times;</button>
+            </div>
+            <div id="ai-chat-history" class="p-4 overflow-y-auto space-y-4 flex-1 text-sm bg-stone-50 min-h-[200px]">
+                <div class="bg-stone-200/50 p-3 rounded-lg text-stone-700 italic">Ask me about the 2029 peak, EV displacement, or hydrogen's future.</div>
+            </div>
+            <div class="p-4 border-t border-stone-100 flex space-x-2">
+                <input id="ai-input" type="text" placeholder="Ask a question..." class="flex-1 px-3 py-2 rounded-lg border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e]" onkeypress="if(event.key === 'Enter') askAI()">
+                <button onclick="askAI()" class="bg-[#0f766e] text-white px-4 py-2 rounded-lg text-sm font-bold">Ask ✨</button>
+            </div>
         </div>
     </div>
 
+    <button onclick="toggleAIPanel()" id="ai-fab" class="fixed bottom-6 right-6 z-[90] bg-[#0f766e] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center">
+        <span class="text-2xl">✨</span>
+    </button>
+
+    <div id="ai-modal" class="fixed inset-0 z-[150] hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-[#faf9f6]">
+                <h3 id="modal-title" class="text-2xl font-bold text-stone-900 serif">✨ AI Insight</h3>
+                <button onclick="closeModal()" class="text-stone-400 hover:text-stone-600 text-2xl">&times;</button>
+            </div>
+            <div id="modal-content" class="p-8 overflow-y-auto text-stone-700 leading-relaxed text-lg">
+                <div class="ai-shimmer h-4 w-full mb-2 rounded"></div>
+                <div class="ai-shimmer h-4 w-3/4 mb-2 rounded"></div>
+                <div class="ai-shimmer h-4 w-1/2 rounded"></div>
+            </div>
+            <div class="p-4 bg-stone-50 border-t border-stone-100 text-right">
+                <button onclick="closeModal()" class="px-6 py-2 rounded-xl bg-stone-200 font-bold text-stone-700 hover:bg-stone-300 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-stone-900 text-stone-400 py-12 text-center border-t border-stone-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="font-bold text-xl tracking-tight text-stone-500 serif mb-4">Energy<span class="text-stone-300">Transition</span></div>
+            <p class="mb-2 text-sm">Research Report Data Visualization Application.</p>
+        </div>
+    </footer>
+
     <script>
-        function openSection(evt, sectionName) {
-            var i, tabcontent, tablinks;
+        // MOCKED AI FUNCTION to replace live API call
+        async function callGemini(prompt) {
+            // Simulate network delay to keep the shimmer UI effect
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Hide all tab content
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+            const lowerPrompt = prompt.toLowerCase();
+
+            // Return hardcoded insights based on keywords
+            if (lowerPrompt.includes("sector") || lowerPrompt.includes("45%")) {
+                return "Based on the data, the 45% road transport share is critical because it represents the largest, most easily electrified segment of oil demand. As EV adoption follows an S-curve and battery costs drop below $80/kWh, the displacement of this specific 45% will accelerate rapidly, forcing global crude demand to peak around 2029 before heavy alternatives even scale.";
+            } else if (lowerPrompt.includes("displacement") || lowerPrompt.includes("risk") || lowerPrompt.includes("trend")) {
+                return "The risk for oil producers is severe. Currently, EVs displace 1.8 mb/d, which is manageable. However, as heavy hydrogen tech scales post-2035, combined displacement reaches 27 mb/d by 2050. Producers will face a structurally shrinking market, forcing refinery consolidation and leaving high-cost upstream assets stranded.";
+            } else if (lowerPrompt.includes("net zero") || lowerPrompt.includes("residual") || lowerPrompt.includes("scenario")) {
+                return "A 100% transition is unlikely because Net Zero does not mean 'zero oil.' The 'Residual 25%' (approx. 24 mb/d) consists of petrochemicals, asphalt, and specialized lubricants—materials essential for modern infrastructure that lack scalable non-fossil substitutes. Achieving Net Zero requires capturing these residual emissions, not eliminating the oil production entirely.";
+            } else if (lowerPrompt.includes("2029") || lowerPrompt.includes("peak")) {
+                return "The 2029 peak is driven by the convergence of battery cost parity and global fleet turnover. Once EVs hit mass-market affordability globally, the erosion of passenger gasoline demand will permanently outpace the growth of oil demand in emerging markets.";
+            } else if (lowerPrompt.includes("hydrogen") || lowerPrompt.includes("h2")) {
+                return "Hydrogen and its derivatives (like ammonia) are positioned to decarbonize 'hard-to-abate' sectors like heavy trucking and shipping where batteries are too heavy. This transition is expected to scale meaningfully in the mid-to-late 2030s once green hydrogen production achieves cost parity with diesel.";
+            } else {
+                return "According to the report, global oil demand is currently 103 mb/d and is expected to peak by 2029. While EVs and Hydrogen will significantly displace combustible fuels over time, a 'Residual 25%' floor of 24 mb/d will remain by 2050 for petrochemicals and industrial materials.";
             }
-
-            // Remove the active class from all buttons
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-
-            // Show the specific tab and add an "active" class to the clicked button
-            document.getElementById(sectionName).style.display = "block";
-            evt.currentTarget.className += " active";
         }
 
-        // Open the default tab on page load
-        document.getElementById("defaultOpen").click();
-    </script>
+        async function generateInsight(sectionId) {
+            const modal = document.getElementById('ai-modal');
+            const content = document.getElementById('modal-content');
+            const title = document.getElementById('modal-title');
+            
+            modal.classList.remove('hidden');
+            content.innerHTML = '<div class="ai-shimmer h-4 w-full mb-2 rounded"></div><div class="ai-shimmer h-4 w-3/4 mb-2 rounded"></div>';
+            
+            let prompt = "";
+            if (sectionId === 'sector') {
+                title.innerText = "✨ AI Sector Vulnerability Analysis";
+                prompt = "Analyze the sector vulnerability chart. Why is the 45% road transport share the most critical factor for oil demand peak in 2029?";
+            } else if (sectionId === 'displacement') {
+                title.innerText = "✨ AI Trend Forecast";
+                prompt = "Based on the displacement data (1.8mb/d now to 27mb/d by 2050), explain the risk for oil producers in the mid-2030s when heavy hydrogen tech begins to scale.";
+            } else {
+                title.innerText = "✨ AI Scenario Analysis";
+                prompt = "Compare the Net Zero scenario with Business-as-Usual. Explain the 'Residual 25%' and why it makes a 100% transition unlikely.";
+            }
 
+            const insight = await callGemini(prompt);
+            content.innerText = insight;
+        }
+
+        function closeModal() {
+            document.getElementById('ai-modal').classList.add('hidden');
+        }
+
+        function toggleAIPanel() {
+            const panel = document.getElementById('ai-panel');
+            const fab = document.getElementById('ai-fab');
+            panel.classList.toggle('hidden');
+            fab.classList.toggle('hidden');
+        }
+
+        async function askAI() {
+            const input = document.getElementById('ai-input');
+            const history = document.getElementById('ai-chat-history');
+            const query = input.value.trim();
+            if (!query) return;
+
+            const userDiv = document.createElement('div');
+            userDiv.className = "bg-[#0f766e]/10 p-2 rounded-lg ml-4 text-right border-r-2 border-[#0f766e]";
+            userDiv.innerText = query;
+            history.appendChild(userDiv);
+            input.value = "";
+            history.scrollTop = history.scrollHeight;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "ai-shimmer h-10 w-2/3 rounded-lg p-2 mt-4";
+            history.appendChild(loadingDiv);
+            history.scrollTop = history.scrollHeight;
+
+            const response = await callGemini(query);
+            loadingDiv.remove();
+
+            const aiDiv = document.createElement('div');
+            aiDiv.className = "bg-white p-3 rounded-lg shadow-sm border border-stone-200 text-stone-800 mt-4";
+            aiDiv.innerText = response;
+            history.appendChild(aiDiv);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // Chart definitions
+        const wrapLabels = (labels) => {
+            return labels.map(label => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > 16) {
+                        if (currentLine) lines.push(currentLine.trim());
+                        currentLine = word + ' ';
+                    } else {
+                        currentLine += word + ' ';
+                    }
+                });
+                if (currentLine) lines.push(currentLine.trim());
+                return lines;
+            });
+        };
+
+        const tooltipConfig = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        Chart.defaults.font.family = "'Nunito Sans', sans-serif";
+        Chart.defaults.color = '#57534e';
+
+        const sectorDataConfig = [
+            { label: 'Road Transport', val: 45, color: '#0369a1', title: 'Road Transport (45%)', desc: 'The most vulnerable sector. Passenger vehicles and light commercial transit are rapidly transitioning to battery electric vehicles (BEVs). This sector is expected to peak before 2030.' },
+            { label: 'Petrochemicals', val: 18, color: '#0f766e', title: 'Petrochemicals (18%)', desc: 'The most resilient sector. Used for plastics, fertilizers, and pharmaceuticals. Demand is growing, and this will form the core of the "Residual 25%" in a Net Zero scenario.' },
+            { label: 'Aviation & Marine', val: 15, color: '#c2410c', title: 'Aviation & Marine (15%)', desc: 'Hard-to-abate sectors. Batteries are too heavy. This sector relies on the future scaling of green hydrogen, ammonia, and Sustainable Aviation Fuels (SAF) post-2035.' },
+            { label: 'Industry & Heat', val: 14, color: '#57534e', title: 'Industry & Heat (14%)', desc: 'Used for high-temperature industrial processes and localized heating. Vulnerable to electrification (heat pumps) and direct industrial hydrogen substitution.' },
+            { label: 'Power Generation', val: 8, color: '#15803d', title: 'Power Generation (8%)', desc: 'Already in steep decline globally as natural gas, solar, and wind provide much cheaper and cleaner alternatives for electricity generation.' }
+        ];
+
+        const ctxSector = document.getElementById('sectorChart').getContext('2d');
+        new Chart(ctxSector, {
+            type: 'doughnut',
+            data: {
+                labels: wrapLabels(sectorDataConfig.map(d => d.label)),
+                datasets: [{
+                    data: sectorDataConfig.map(d => d.val),
+                    backgroundColor: sectorDataConfig.map(d => d.color),
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right', labels: { padding: 20, font: { weight: '600' } } },
+                    tooltip: tooltipConfig
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const data = sectorDataConfig[index];
+                        const detailsDiv = document.getElementById('sector-details');
+                        detailsDiv.innerHTML = `
+                            <div class="text-[${data.color}] text-sm font-bold uppercase tracking-wider mb-2">Sector Analysis</div>
+                            <h3 class="text-2xl font-bold text-stone-900 mb-4 serif">${data.title}</h3>
+                            <p class="text-stone-600 leading-relaxed">${data.desc}</p>
+                        `;
+                    }
+                }
+            }
+        });
+
+        const ctxDisp = document.getElementById('displacementChart').getContext('2d');
+        new Chart(ctxDisp, {
+            type: 'bar',
+            data: {
+                labels: wrapLabels(['2025', '2030', '2035', '2040', '2045', '2050']),
+                datasets: [
+                    { label: 'EV Displacement', data: [1.8, 5.2, 11.5, 18.0, 23.5, 27.0], backgroundColor: '#0369a1', borderRadius: 4 },
+                    { label: 'Hydrogen Displacement', data: [0.1, 0.8, 3.0, 7.5, 12.0, 16.5], backgroundColor: '#c2410c', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, title: { display: true, text: 'Displaced Demand (mb/d)' } }
+                },
+                plugins: { tooltip: tooltipConfig }
+            }
+        });
+
+        const ctxScen = document.getElementById('scenarioChart').getContext('2d');
+        new Chart(ctxScen, {
+            type: 'line',
+            data: {
+                labels: wrapLabels(['2020', '2025', '2030', '2035', '2040', '2045', '2050']),
+                datasets: [
+                    { label: 'BAU', data: [92, 102, 105, 106, 106, 105, 103], borderColor: '#57534e', fill: false },
+                    { label: 'Net Zero 2050', data: [92, 100, 80, 62, 45, 32, 24], borderColor: '#0f766e', backgroundColor: 'rgba(15, 118, 110, 0.1)', fill: true, tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { min: 0 } },
+                plugins: { tooltip: tooltipConfig }
+            }
+        });
+
+        // Timeline ERA controls
+        const eraData = {
+            'plateau': { title: 'The Plateau', desc: 'EV adoption in China and Europe reaches critical mass. Global oil demand hits its structural peak around 2029.' },
+            'decline': { title: 'Structural Decay', desc: 'Internal Combustion Engine (ICE) bans take effect in major global markets. Heavy trucking begins shifting to Hydrogen fuel cells.' },
+            'shift': { title: 'The Heavy Shift', desc: 'Green ammonia and sustainable aviation fuels (SAF) derived from green hydrogen scale up. Marine and aviation demand begins to collapse.' },
+            'material': { title: 'The Material Era', desc: 'The "combustion era" ends. Remaining crude extraction is dedicated primarily to petrochemicals, lubricants, and advanced materials.' }
+        };
+
+        const timelineBtns = document.querySelectorAll('.tab-btn');
+        const eraDescDiv = document.getElementById('era-description');
+
+        timelineBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                timelineBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-[#0f766e]', 'text-white');
+                    b.classList.add('text-stone-600');
+                });
+                btn.classList.add('active', 'bg-[#0f766e]', 'text-white');
+                btn.classList.remove('text-stone-600');
+                
+                const eraKey = btn.getAttribute('data-era');
+                const data = eraData[eraKey];
+                
+                eraDescDiv.innerHTML = `
+                    <h4 class="text-xl font-bold text-stone-900 mb-2">${data.title}</h4>
+                    <p class="text-stone-600">${data.desc}</p>
+                `;
+            });
+        });
+    </script>
 </body>
 </html>

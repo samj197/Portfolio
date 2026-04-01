@@ -27,6 +27,18 @@ export default function Projects() {
       linkText: "View Interactive Report"
     },
     {
+      title: "The Great Energy Divergence",
+      subtitle: "Energy Transition Projections 2026",
+      icon: <Globe className="w-6 h-6" />,
+      bullets: [
+        "Assessed the displacement of crude oil by electrification and hydrogen in the path to 2050.",
+        "Analyzed EV impact, hydrogen solutions, and oil resilience constraints.",
+        "Created an interactive tabbed report detailing transition timelines and scenarios."
+      ],
+      link: "/energy-divergence-report.html",
+      linkText: "View 2026 Report"
+    },
+    {
       title: "Campaign ROI Tracking & Budget Optimization",
       subtitle: "Marketing Analytics",
       icon: <Presentation className="w-6 h-6" />,
