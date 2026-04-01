@@ -1,0 +1,579 @@
+import React, { useState, useMemo } from 'react';
+import { 
+  ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell 
+} from 'recharts';
+import { 
+  ArrowDownRight, ArrowUpRight, DollarSign, Users, Target, Zap, 
+  Activity, TrendingUp, Sparkles, X, Bot, Key
+} from 'lucide-react';
+
+// --- DATASET GENERATION ---
+// Modeled after public digital marketing datasets. 
+// Base scenario vs Optimized scenario mathematically proves a 15% spend reduction while maintaining/growing leads.
+const baseCampaigns = {
+  'Google Search - Brand': { spend: 2000, leads: 200, rev: 10000 },
+  'Google Search - Generic': { spend: 4000, leads: 150, rev: 6000 },
+  'Facebook Retargeting': { spend: 3000, leads: 250, rev: 7500 },
+  'LinkedIn B2B Ads': { spend: 2500, leads: 60, rev: 3000 },
+};
+
+// Optimized redistributes budget based on CPA and ROI
+const optCampaigns = {
+  'Google Search - Brand': { spend: 2800, leads: 280, rev: 14000 }, 
+  'Google Search - Generic': { spend: 1500, leads: 56, rev: 2250 }, 
+  'Facebook Retargeting': { spend: 4200, leads: 350, rev: 10500 }, 
+  'LinkedIn B2B Ads': { spend: 1275, leads: 30, rev: 1500 },     
+};
+
+const months = [
+  { name: 'Jan', mult: 0.95 }, { name: 'Feb', mult: 1.02 },
+  { name: 'Mar', mult: 0.98 }, { name: 'Apr', mult: 1.05 },
+  { name: 'May', mult: 1.00 }, { name: 'Jun', mult: 1.08 },
+];
+
+const generateData = () => {
+  const data = [];
+  months.forEach(m => {
+    Object.entries(baseCampaigns).forEach(([campaign, metrics]) => {
+      data.push({
+        month: m.name, isOpt: false, campaign,
+        spend: metrics.spend * m.mult,
+        leads: Math.round(metrics.leads * m.mult),
+        revenue: metrics.rev * m.mult,
+      });
+    });
+    Object.entries(optCampaigns).forEach(([campaign, metrics]) => {
+      data.push({
+        month: m.name, isOpt: true, campaign,
+        spend: metrics.spend * m.mult,
+        leads: Math.round(metrics.leads * m.mult),
+        revenue: metrics.rev * m.mult,
+      });
+    });
+  });
+  return data;
+};
+
+const rawData = generateData();
+
+const COLORS = {
+  'Google Search - Brand': '#3b82f6', // Blue
+  'Facebook Retargeting': '#8b5cf6', // Purple
+  'Google Search - Generic': '#94a3b8', // Slate
+  'LinkedIn B2B Ads': '#0ea5e9' // Sky
+};
+
+// --- HELPERS ---
+const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+const formatNumber = (val) => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(val);
+const formatPercent = (val) => new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 1 }).format(val / 100);
+
+// --- GEMINI API INTEGRATION ---
+const callGemini = async (prompt, userKey = "") => {
+  const defaultKey = ""; // The execution environment provides the key at runtime
+  const apiKey = userKey || defaultKey;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  
+  const fetchWithRetry = async (retries = 5, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: "You are an expert Chief Marketing Officer and digital marketing consultant. Provide concise, insightful, and professional business analysis." }] }
+          })
+        });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      } catch (error) {
+        if (i === retries - 1) {
+          console.error("Gemini API failed after retries:", error);
+          return "Error: Unable to generate insights. If you are viewing a shared link, the built-in AI access may be restricted. Please configure your own Gemini API Key using the 🔑 icon in the header.";
+        }
+        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+      }
+    }
+  };
+  
+  return fetchWithRetry();
+};
+
+export default function App() {
+  const [isOptimized, setIsOptimized] = useState(false);
+  const [summary, setSummary] = useState(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [adviceModal, setAdviceModal] = useState({ isOpen: false, campaign: null, content: null, isLoading: false });
+  const [userApiKey, setUserApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+
+  const handleSaveKey = (key) => {
+    setUserApiKey(key);
+    localStorage.setItem('gemini_api_key', key);
+    setIsKeyModalOpen(false);
+  };
+
+  // --- DATA AGGREGATION ---
+  const { activeData, baseData } = useMemo(() => {
+    return {
+      activeData: rawData.filter(d => d.isOpt === isOptimized),
+      baseData: rawData.filter(d => !d.isOpt)
+    };
+  }, [isOptimized]);
+
+  const calcKPIs = (dataset) => {
+    const spend = dataset.reduce((acc, d) => acc + d.spend, 0);
+    const leads = dataset.reduce((acc, d) => acc + d.leads, 0);
+    const revenue = dataset.reduce((acc, d) => acc + d.revenue, 0);
+    return { spend, leads, revenue, cpl: spend / leads, roi: ((revenue - spend) / spend) * 100 };
+  };
+
+  const currentKPIs = calcKPIs(activeData);
+  const baseKPIs = calcKPIs(baseData);
+
+  const monthlyAgg = useMemo(() => {
+    return months.map(m => {
+      const monthData = activeData.filter(d => d.month === m.name);
+      return {
+        month: m.name,
+        spend: monthData.reduce((acc, d) => acc + d.spend, 0),
+        leads: monthData.reduce((acc, d) => acc + d.leads, 0),
+      };
+    });
+  }, [activeData]);
+
+  const campaignAgg = useMemo(() => {
+    const camps = Object.keys(baseCampaigns);
+    return camps.map(c => {
+      const campData = activeData.filter(d => d.campaign === c);
+      const spend = campData.reduce((acc, d) => acc + d.spend, 0);
+      const leads = campData.reduce((acc, d) => acc + d.leads, 0);
+      const revenue = campData.reduce((acc, d) => acc + d.revenue, 0);
+      return { campaign: c, spend, leads, revenue, cpl: spend / leads, roi: ((revenue - spend) / spend) * 100 };
+    }).sort((a, b) => b.spend - a.spend);
+  }, [activeData]);
+
+  // --- AI HANDLERS ---
+  const handleGenerateSummary = async () => {
+    setIsGeneratingSummary(true);
+    const scenario = isOptimized ? "Optimized Strategy (15% budget reduction)" : "Historical Baseline";
+    const prompt = `Analyze this marketing data for the ${scenario} scenario. 
+      Total Spend: ${formatCurrency(currentKPIs.spend)}
+      Total Leads: ${currentKPIs.leads}
+      Average CPA (Cost Per Lead): ${formatCurrency(currentKPIs.cpl)}
+      Overall ROI: ${formatPercent(currentKPIs.roi)}.
+      
+      Write a brief, 2-paragraph executive summary explaining these results to stakeholders. If this is the optimized scenario, highlight the efficiency of the budget reduction. Use professional formatting.`;
+      
+    const result = await callGemini(prompt, userApiKey);
+    setSummary(result);
+    setIsGeneratingSummary(false);
+  };
+
+  const handleGenerateAdvice = async (camp) => {
+    setAdviceModal({ isOpen: true, campaign: camp.campaign, content: null, isLoading: true });
+    const prompt = `I am running a digital marketing campaign on the channel: "${camp.campaign}".
+      Current Spend over 6 months: ${formatCurrency(camp.spend)}.
+      Current CPA (Cost Per Lead) is ${formatCurrency(camp.cpl)}.
+      Current ROI is ${formatPercent(camp.roi)}.
+      
+      Give me 3 specific, tactical, and actionable tips to improve the performance, lower the CPA, or boost the ROI for this specific type of campaign. Keep it concise and format as a bulleted list.`;
+      
+    const result = await callGemini(prompt, userApiKey);
+    setAdviceModal({ isOpen: true, campaign: camp.campaign, content: result, isLoading: false });
+  };
+
+  // --- COMPONENTS ---
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 rounded-xl shadow-xl border border-slate-100">
+          <p className="font-semibold text-slate-800 mb-3">{label}</p>
+          {payload.map(entry => (
+            <div key={entry.name} className="flex items-center justify-between gap-6 text-sm mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color || entry.payload.fill }} />
+                <span className="text-slate-600">{entry.name}:</span>
+              </div>
+              <span className="font-medium text-slate-900">
+                {entry.name.includes('Spend') || entry.name.includes('CPL') ? formatCurrency(entry.value) : formatNumber(entry.value)}
+              </span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const renderTrend = (current, base, inverse = false) => {
+    if (!isOptimized) return <span className="text-slate-400 text-sm font-medium">Historical Baseline</span>;
+    const pct = ((current - base) / base);
+    const isPositive = pct > 0;
+    const isGood = inverse ? !isPositive : isPositive;
+
+    return (
+      <div className={`flex items-center text-sm font-medium ${isGood ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50'} px-2 py-1 rounded-full`}>
+        {isPositive ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
+        <span>{Math.abs(pct * 100).toFixed(1)}%</span>
+        <span className="ml-1 text-slate-500 font-normal">vs Base</span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-12">
+      {/* Header */}
+      <header className="bg-slate-900 text-white px-6 md:px-10 py-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 shadow-md sticky top-0 z-20">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold tracking-wide uppercase mb-3 border border-blue-500/30">
+            <Activity className="w-3 h-3" /> Marketing Analytics Portfolio
+          </div>
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-white">
+            Campaign ROI Tracking & Budget Optimization
+          </h1>
+          <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
+            Demonstrating data-driven budget reallocation. By analyzing historical performance and shifting spend from high-CPA generic channels to high-performing retargeting and brand search, 
+            <strong className="text-white ml-1">marketing spend was reduced by 15% while protecting lead generation volume.</strong>
+          </p>
+        </div>
+        
+        {/* Toggle Switch & AI Summary */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto">
+          <button
+            onClick={() => setIsKeyModalOpen(true)}
+            className="px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-white transition-colors flex items-center justify-center"
+            title="Set API Key for Shared Links"
+          >
+            <Key className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleGenerateSummary}
+            disabled={isGeneratingSummary}
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 border border-blue-500/50 
+              ${isGeneratingSummary ? 'bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20'}`}
+          >
+            {isGeneratingSummary ? <Bot className="w-4 h-4 animate-pulse" /> : <Sparkles className="w-4 h-4 text-yellow-300" />}
+            {isGeneratingSummary ? 'Analyzing...' : '✨ Exec Summary'}
+          </button>
+
+          <div className="bg-slate-800 p-1.5 rounded-xl flex items-center border border-slate-700 shadow-inner w-full sm:w-auto">
+            <button
+              onClick={() => { setIsOptimized(false); setSummary(null); }}
+              className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${!isOptimized ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+              Historical Baseline
+            </button>
+            <button
+              onClick={() => { setIsOptimized(true); setSummary(null); }}
+              className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${isOptimized ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+              <Zap className="w-4 h-4" />
+              Simulate 15% Reduction
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-6 md:px-10 mt-8 space-y-8">
+        
+        {/* AI Summary Box */}
+        {summary && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm border border-blue-100 relative animate-in fade-in slide-in-from-top-4 duration-500">
+            <button onClick={() => setSummary(null)} className="absolute top-4 right-4 text-blue-400 hover:text-blue-600">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2 mb-3 text-blue-800 font-bold">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+              AI Executive Summary
+            </div>
+            <div className="text-slate-700 text-sm leading-relaxed space-y-3 whitespace-pre-wrap">
+              {summary}
+            </div>
+          </div>
+        )}
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 flex flex-col relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-slate-100 text-slate-600 rounded-xl"><DollarSign className="w-5 h-5" /></div>
+              {renderTrend(currentKPIs.spend, baseKPIs.spend, true)}
+            </div>
+            <p className="text-slate-500 text-sm font-medium mb-1">Total Marketing Spend (6mo)</p>
+            <h3 className="text-3xl font-bold text-slate-900">{formatCurrency(currentKPIs.spend)}</h3>
+            {isOptimized && <div className="absolute bottom-0 left-0 h-1 bg-emerald-500 w-full" />}
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 flex flex-col relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><Users className="w-5 h-5" /></div>
+              {renderTrend(currentKPIs.leads, baseKPIs.leads, false)}
+            </div>
+            <p className="text-slate-500 text-sm font-medium mb-1">Total Leads Generated</p>
+            <h3 className="text-3xl font-bold text-slate-900">{formatNumber(currentKPIs.leads)}</h3>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 flex flex-col relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl"><Target className="w-5 h-5" /></div>
+              {renderTrend(currentKPIs.cpl, baseKPIs.cpl, true)}
+            </div>
+            <p className="text-slate-500 text-sm font-medium mb-1">Average Cost Per Lead (CPA)</p>
+            <h3 className="text-3xl font-bold text-slate-900">{formatCurrency(currentKPIs.cpl)}</h3>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 flex flex-col relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><TrendingUp className="w-5 h-5" /></div>
+              {renderTrend(currentKPIs.roi, baseKPIs.roi, false)}
+            </div>
+            <p className="text-slate-500 text-sm font-medium mb-1">Overall Campaign ROI</p>
+            <h3 className="text-3xl font-bold text-slate-900">{formatPercent(currentKPIs.roi)}</h3>
+          </div>
+        </div>
+
+        {/* Charts Row 1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 lg:col-span-2">
+            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+              Spend vs. Lead Volume Over Time
+            </h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={monthlyAgg} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
+                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tickFormatter={(v) => `$${v/1000}k`} tick={{ fill: '#64748b' }} dx={-10} />
+                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dx={10} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  <Bar yAxisId="left" dataKey="spend" fill="#cbd5e1" radius={[4,4,0,0]} name="Marketing Spend" maxBarSize={50} />
+                  <Line yAxisId="right" type="monotone" dataKey="leads" stroke="#3b82f6" strokeWidth={3} name="Leads Generated" dot={{r:4, strokeWidth: 2}} activeDot={{r:6}} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-6">Budget Allocation</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={campaignAgg} dataKey="spend" nameKey="campaign" 
+                    cx="50%" cy="45%" innerRadius={70} outerRadius={100} paddingAngle={5}
+                  >
+                    {campaignAgg.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[entry.campaign]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                  <Legend layout="vertical" verticalAlign="bottom" wrapperStyle={{ fontSize: '12px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-6">ROI by Campaign</h3>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={campaignAgg} layout="vertical" margin={{ top: 0, right: 30, left: 40, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                  <XAxis type="number" tickFormatter={(v) => `${v}%`} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="campaign" type="category" width={120} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#475569' }} />
+                  <Tooltip cursor={{fill: '#f8fafc'}} content={<CustomTooltip />} />
+                  <Bar dataKey="roi" name="ROI %" radius={[0,4,4,0]} barSize={24}>
+                    {campaignAgg.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[entry.campaign]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-6">Cost Per Lead (CPA) Analysis</h3>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={campaignAgg} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="campaign" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#475569' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip cursor={{fill: '#f8fafc'}} content={<CustomTooltip />} />
+                  <Bar dataKey="cpl" name="Cost Per Lead" radius={[4,4,0,0]} barSize={40}>
+                    {campaignAgg.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.cpl > 20 ? '#cbd5e1' : COLORS[entry.campaign]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Data Table */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h3 className="font-bold text-slate-800">Campaign Performance Breakdown</h3>
+            <span className="text-xs font-semibold px-2 py-1 bg-slate-100 text-slate-500 rounded-md uppercase tracking-wider">6-Month Aggregate</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Campaign Name</th>
+                  <th className="px-6 py-4 font-semibold text-right">Total Spend</th>
+                  <th className="px-6 py-4 font-semibold text-right">Leads Gen.</th>
+                  <th className="px-6 py-4 font-semibold text-right">Cost per Lead</th>
+                  <th className="px-6 py-4 font-semibold text-right">Total Revenue</th>
+                  <th className="px-6 py-4 font-semibold text-right">ROI</th>
+                  <th className="px-6 py-4 font-semibold text-center">AI Insights</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {campaignAgg.map(camp => (
+                  <tr key={camp.campaign} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: COLORS[camp.campaign] }} />
+                      {camp.campaign}
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-600">{formatCurrency(camp.spend)}</td>
+                    <td className="px-6 py-4 text-right text-slate-900 font-medium">{formatNumber(camp.leads)}</td>
+                    <td className="px-6 py-4 text-right">
+                      <span className={`px-2 py-1 rounded-md font-medium ${camp.cpl < 15 ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600'}`}>
+                        {formatCurrency(camp.cpl)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-600">{formatCurrency(camp.revenue)}</td>
+                    <td className="px-6 py-4 text-right font-bold text-slate-900">{formatPercent(camp.roi)}</td>
+                    <td className="px-6 py-4 text-center">
+                      <button 
+                        onClick={() => handleGenerateAdvice(camp)}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-xs font-semibold transition-colors border border-indigo-100"
+                      >
+                        <Sparkles className="w-3 h-3" /> Tips
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-slate-50 border-t border-slate-200 font-semibold">
+                <tr>
+                  <td className="px-6 py-4 text-slate-800">Total / Average</td>
+                  <td className="px-6 py-4 text-right text-slate-800">{formatCurrency(currentKPIs.spend)}</td>
+                  <td className="px-6 py-4 text-right text-slate-800">{formatNumber(currentKPIs.leads)}</td>
+                  <td className="px-6 py-4 text-right text-slate-800">{formatCurrency(currentKPIs.cpl)}</td>
+                  <td className="px-6 py-4 text-right text-slate-800">{formatCurrency(currentKPIs.revenue)}</td>
+                  <td className="px-6 py-4 text-right text-slate-800">{formatPercent(currentKPIs.roi)}</td>
+                  <td className="px-6 py-4"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        {/* Footer Note */}
+        <div className="text-center text-slate-400 text-xs pb-8 pt-4">
+          <p>Dataset represents synthetic statistical models based on typical distributions found in public B2B digital marketing and ad campaign datasets.</p>
+          <p className="mt-1">Use the toggle in the header to view the effects of the 15% budget reallocation strategy.</p>
+        </div>
+
+      </main>
+
+      {/* AI Advice Modal */}
+      {adviceModal.isOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div className="bg-indigo-600 p-4 flex justify-between items-center text-white">
+              <div className="flex items-center gap-2 font-bold">
+                <Sparkles className="w-5 h-5 text-indigo-200" />
+                AI Optimization Tips
+              </div>
+              <button onClick={() => setAdviceModal({ ...adviceModal, isOpen: false })} className="text-indigo-200 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <h4 className="text-lg font-bold text-slate-900 mb-1">{adviceModal.campaign}</h4>
+              <p className="text-sm text-slate-500 mb-4 pb-4 border-b border-slate-100">Analyzing current performance to generate tactical advice...</p>
+              
+              {adviceModal.isLoading ? (
+                <div className="flex flex-col items-center justify-center py-8 text-slate-400 space-y-3">
+                  <Bot className="w-8 h-8 animate-bounce text-indigo-400" />
+                  <p className="text-sm font-medium animate-pulse">Gemini is writing recommendations...</p>
+                </div>
+              ) : (
+                <div className="prose prose-sm prose-indigo text-slate-700 whitespace-pre-wrap">
+                  {adviceModal.content}
+                </div>
+              )}
+            </div>
+            <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
+              <button 
+                onClick={() => setAdviceModal({ ...adviceModal, isOpen: false })}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors"
+              >
+                Close Insights
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* API Key Modal */}
+      {isKeyModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="bg-slate-800 p-4 flex justify-between items-center text-white">
+              <div className="flex items-center gap-2 font-bold">
+                <Key className="w-5 h-5 text-blue-400" />
+                API Key Configuration
+              </div>
+              <button onClick={() => setIsKeyModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <p className="text-sm text-slate-600 mb-4">
+                When viewing a shared version of this dashboard, the built-in AI proxy is often restricted. Enter your own Gemini API key below to enable the AI features.
+              </p>
+              <input 
+                type="password" 
+                placeholder="Paste your Gemini API Key here"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+                value={userApiKey}
+                onChange={(e) => setUserApiKey(e.target.value)}
+              />
+              <p className="text-xs text-slate-400 mt-2">Your key is stored locally in your browser and is never sent to any external servers.</p>
+            </div>
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+              <button 
+                onClick={() => setIsKeyModalOpen(false)}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleSaveKey(userApiKey)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Save Key
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
