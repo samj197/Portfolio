@@ -383,4 +383,34 @@
             <p>The feasibility of a complete energy transition by 2050 is increasingly being questioned on the grounds of physical and material constraints. McKinsey Global Institute describes the transition as being in its "early stages," with only about 10 percent of the required deployment of low-emissions technologies achieved by 2024. Moving to a zero-carbon system requires the deployment of millions of new assets and the creation of entirely new supply chains for critical minerals.</p>
 
             <h3>The Critical Minerals Supply Gap</h3>
-            <p>The shift from a fuel-intensive energy system to a mineral-intensive one creates new vulnerabilities. A typical electric vehicle requires significantly more minerals than a conventional car, and the expansion of the global power grid to support electrification will require massive amounts of copper
+            <p>The shift from a fuel-intensive energy system to a mineral-intensive one creates new vulnerabilities. A typical electric vehicle requires significantly more minerals than a conventional car, and the expansion of the global power grid to support electrification will require massive amounts of copper            <p>The shift from a fuel-intensive energy system to a mineral-intensive one creates new vulnerabilities. A typical electric vehicle requires significantly more minerals than a conventional car, and the expansion of the global power grid to support electrification will require massive amounts of copper.</p>
+        </div>
+        <div id="Timeline" class="tabcontent">
+            <h2>Transition Timeline</h2>
+            <p>The timeline for this transition is not linear. It will proceed at different speeds in different sectors and different geographies.</p>
+        </div>
+        <div id="WorksCited" class="tabcontent">
+            <h2>Works Cited</h2>
+            <p>References and sources would appear here.</p>
+        </div>
+    </div>
+    <script>
+        function openSection(evt, sectionName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(sectionName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    </script>
+</body>
+</html>
