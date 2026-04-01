@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Retail Revenue Dashboard</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border-color: #e5e7eb;
+            --color-foods: #10b981; /* Green */
+            --color-household: #f59e0b; /* Amber */
+            --color-hobbies: #8b5cf6; /* Purple */
+            --color-total: #3b82f6; /* Blue */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .metrics {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .controls-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <header>
+            <h1>Predictive Retail Revenue Forecast: M5 Dataset Structure</h1>
+            <p>Interactive portfolio model demonstrating baseline distribution and dynamic category growth drivers.</p>
+        </header>
+
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-title">Historical Revenue (Last 12M)</div>
+                <div class="metric-value" id="hist-rev">$0.00M</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Projected Revenue (Next 12M)</div>
+                <div class="metric-value" id="proj-rev" style="color: var(--color-total)">$0.00M</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Forecast Accuracy Boost</div>
+                <div class="metric-value" style="color: var(--color-foods)">+18.1%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Data Source Format</div>
+                <div class="metric-value">Walmart M5</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="chart"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-total)"></div>Total</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-foods)"></div>Foods</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-household)"></div>Household</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--color-hobbies)"></div>Hobbies</div>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <h3>Model Parameters</h3>
+            
+            <div class="control-group">
+                <label>Foods Growth (%) <span id="val-foods">3%</span></label>
+                <input type="range" id="input-foods" min="-10" max="30" value="3">
+            </div>
+
+            <div class="control-group">
+                <label>Household Growth (%) <span id="val-household">5%</span></label>
+                <input type="range" id="input-household" min="-10" max="30" value="5">
+            </div>
+
+            <div class="control-group">
+                <label>Hobbies Growth (%) <span id="val-hobbies">8%</span></label>
+                <input type="range" id="input-hobbies" min="-10" max="40" value="8">
+            </div>
+
+            <div class="control-group">
+                <label>Marketing Multiplier <span id="val-marketing">1.1x</span></label>
+                <input type="range" id="input-marketing" min="1.0" max="3.0" step="0.1" value="1.1">
+            </div>
+
+            <div class="toggle-container">
+                <label for="input-ci"><strong>Show Confidence Intervals (±8%)</strong></label>
+                <input type="checkbox" id="input-ci" checked>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Setup Historical Data (in thousands)
+        const histData = {
+            foods: [420, 400, 450, 440, 470, 480, 490, 500, 480, 520, 600, 750],
+            household: [210, 200, 220, 215, 230, 240, 250, 260, 240, 270, 320, 400],
+            hobbies: [80, 75, 85, 80, 90, 95, 100, 105, 95, 110, 150, 220]
+        };
+
+        // 2. D3 Chart Setup
+        const margin = {top: 20, right: 30, bottom: 40, left: 60};
+        const width = document.querySelector('.chart-container').offsetWidth - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const x = d3.scaleLinear().domain([1, 24]).range([0, width]);
+        const y = d3.scaleLinear().domain([0, 3500]).range([height, 0]); // Max Y adjusted for Total
+
+        // Axes
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).ticks(24).tickFormat(d => "M" + d));
+            
+        svg.append("g")
+            .call(d3.axisLeft(y).tickFormat(d => "$" + (d/1000).toFixed(1) + "M"));
+
+        // Divider Line (Month 12 to 13)
+        svg.append("line")
+            .attr("x1", x(12.5))
+            .attr("x2", x(12.5))
+            .attr("y1", 0)
+            .attr("y2", height)
+            .attr("stroke", "#9ca3af")
+            .attr("stroke-dasharray", "4,4");
+
+        svg.append("text")
+            .attr("x", x(12))
+            .attr("y", 10)
+            .attr("text-anchor", "end")
+            .style("fill", "#6b7280")
+            .style("font-size", "12px")
+            .text("Historical →");
+
+        svg.append("text")
+            .attr("x", x(13))
+            .attr("y", 10)
+            .attr("text-anchor", "start")
+            .style("fill", "#6b7280")
+            .style("font-size", "12px")
+            .text("← Forecast");
+
+        // Line Generators
+        const lineGen = d3.line()
+            .x(d => x(d.month))
+            .y(d => y(d.value))
+            .curve(d3.curveMonotoneX);
+
+        const areaGen = d3.area()
+            .x(d => x(d.month))
+            .y0(d => y(d.value * 0.92)) // -8% CI
+            .y1(d => y(d.value * 1.08)) // +8% CI
+            .curve(d3.curveMonotoneX);
+
+        // Path Containers
+        const paths = {
+            foodsHist: svg.append("path").attr("fill", "none").attr("stroke", "#10b981").attr("stroke-width", 2),
+            houseHist: svg.append("path").attr("fill", "none").attr("stroke", "#f59e0b").attr("stroke-width", 2),
+            hobHist: svg.append("path").attr("fill", "none").attr("stroke", "#8b5cf6").attr("stroke-width", 2),
+            totalHist: svg.append("path").attr("fill", "none").attr("stroke", "#3b82f6").attr("stroke-width", 3),
+            
+            foodsProj: svg.append("path").attr("fill", "none").attr("stroke", "#10b981").attr("stroke-width", 2).attr("stroke-dasharray", "5,5"),
+            houseProj: svg.append("path").attr("fill", "none").attr("stroke", "#f59e0b").attr("stroke-width", 2).attr("stroke-dasharray", "5,5"),
+            hobProj: svg.append("path").attr("fill", "none").attr("stroke", "#8b5cf6").attr("stroke-width", 2).attr("stroke-dasharray", "5,5"),
+            totalProj: svg.append("path").attr("fill", "none").attr("stroke", "#3b82f6").attr("stroke-width", 3).attr("stroke-dasharray", "5,5"),
+            
+            totalCI: svg.append("path").attr("fill", "#3b82f6").attr("opacity", 0) // Hidden by default
+        };
+
+        // 3. Update Logic
+        function updateDashboard() {
+            // Get input values
+            const gFoods = parseFloat(document.getElementById('input-foods').value) / 100;
+            const gHouse = parseFloat(document.getElementById('input-household').value) / 100;
+            const gHobbies = parseFloat(document.getElementById('input-hobbies').value) / 100;
+            const mult = parseFloat(document.getElementById('input-marketing').value);
+            const showCI = document.getElementById('input-ci').checked;
+
+            // Update UI Labels
+            document.getElementById('val-foods').innerText = (gFoods * 100).toFixed(0) + "%";
+            document.getElementById('val-household').innerText = (gHouse * 100).toFixed(0) + "%";
+            document.getElementById('val-hobbies').innerText = (gHobbies * 100).toFixed(0) + "%";
+            document.getElementById('val-marketing').innerText = mult.toFixed(1) + "x";
+
+            // Process Data Arrays
+            let dHistFoods = [], dHistHouse = [], dHistHob = [], dHistTotal = [];
+            let dProjFoods = [], dProjHouse = [], dProjHob = [], dProjTotal = [];
+            let sumHist = 0, sumProj = 0;
+
+            for(let i=0; i<12; i++) {
+                let month = i + 1;
+                let t = histData.foods[i] + histData.household[i] + histData.hobbies[i];
+                
+                dHistFoods.push({month, value: histData.foods[i]});
+                dHistHouse.push({month, value: histData.household[i]});
+                dHistHob.push({month, value: histData.hobbies[i]});
+                dHistTotal.push({month, value: t});
+                
+                sumHist += t;
+
+                // Connection point for projection (Month 12)
+                if (i === 11) {
+                    dProjFoods.push({month, value: histData.foods[i]});
+                    dProjHouse.push({month, value: histData.household[i]});
+                    dProjHob.push({month, value: histData.hobbies[i]});
+                    dProjTotal.push({month, value: t});
+                }
+            }
+
+            for(let i=0; i<12; i++) {
+                let month = i + 13;
+                
+                let pFoods = histData.foods[i] * (1 + gFoods) * mult;
+                let pHouse = histData.household[i] * (1 + gHouse) * mult;
+                let pHob = histData.hobbies[i] * (1 + gHobbies) * mult;
+                let pTotal = pFoods + pHouse + pHob;
+
+                dProjFoods.push({month, value: pFoods});
+                dProjHouse.push({month, value: pHouse});
+                dProjHob.push({month, value: pHob});
+                dProjTotal.push({month, value: pTotal});
+
+                sumProj += pTotal;
+            }
+
+            // Update Metrics
+            document.getElementById('hist-rev').innerText = "$" + (sumHist / 1000).toFixed(2) + "M";
+            document.getElementById('proj-rev').innerText = "$" + (sumProj / 1000).toFixed(2) + "M";
+
+            // Update Chart Paths
+            paths.foodsHist.attr("d", lineGen(dHistFoods));
+            paths.houseHist.attr("d", lineGen(dHistHouse));
+            paths.hobHist.attr("d", lineGen(dHistHob));
+            paths.totalHist.attr("d", lineGen(dHistTotal));
+
+            paths.foodsProj.attr("d", lineGen(dProjFoods));
+            paths.houseProj.attr("d", lineGen(dProjHouse));
+            paths.hobProj.attr("d", lineGen(dProjHob));
+            paths.totalProj.attr("d", lineGen(dProjTotal));
+
+            if (showCI) {
+                paths.totalCI.attr("d", areaGen(dProjTotal)).attr("opacity", 0.15);
+            } else {
+                paths.totalCI.attr("opacity", 0);
+            }
+        }
+
+        // 4. Attach Event Listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', updateDashboard);
+        });
+
+        // Initialize
+        updateDashboard();
+    </script>
+</body>
+</html>

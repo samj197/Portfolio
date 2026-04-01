@@ -39,13 +39,16 @@ export default function Projects() {
       linkText: "View Interactive Dashboard"
     },
     {
-      title: "Revenue Forecasting Model for Retail Client",
+      title: "Predictive Retail Revenue Forecast",
       subtitle: "Predictive Analytics",
       icon: <Lightbulb className="w-6 h-6" />,
       bullets: [
-        "Developed a predictive model in Excel and Power BI to forecast monthly revenue.",
-        "Improved forecast accuracy by 18%, enhancing financial and marketing decisions."
-      ]
+        "Developed a predictive model to forecast monthly revenue across product categories.",
+        "Improved forecast accuracy by 18.1%, enhancing financial and marketing decisions.",
+        "Interactive dashboard demonstrates baseline distribution and growth drivers."
+      ],
+      link: "/retail-dashboard.html",
+      linkText: "View Interactive Dashboard"
     }
   ];
 
