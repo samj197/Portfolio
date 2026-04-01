@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great Energy Divergence: 2026 Report</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tab Navigation */
+        .tab {
+            overflow: hidden;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 20px;
+            transition: 0.3s;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            flex-grow: 1;
+        }
+
+        .tab button:hover {
+            background-color: #e2e2e2;
+        }
+
+        .tab button.active {
+            background-color: white;
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        /* Tab Content */
+        .tabcontent {
+            display: none;
+            padding: 2rem;
+            animation: fadeEffect 0.5s;
+        }
+
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .caption {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Lists */
+        ul {
+            margin-bottom: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .works-cited-list {
+            list-style-type: decimal;
+            padding-left: 20px;
+        }
+        
+        .works-cited-list li {
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+        
+        .works-cited-list a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .works-cited-list a:hover {
+            text-decoration: underline;
+            color: var(--primary-color);
+        }
+
+        .url-text {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .tab button {
+                width: 100%;
+                text-align: left;
+                border-bottom: 1px solid #ccc;
+            }
+            .tab button.active {
+                border-bottom: 1px solid var(--border-color);
+                border-left: 4px solid var(--secondary-color);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>The Great Energy Divergence</h1>
+        <p>Assessing the Displacement of Crude Oil by Electrification and Hydrogen in the Path to 2050</p>
+    </header>
+
+    <div class="container">
+        <div class="tab">
+            <button class="tablinks" onclick="openSection(event, 'Overview')" id="defaultOpen">Overview & Projections</button>
+            <button class="tablinks" onclick="openSection(event, 'EVs')">EV Impact</button>
+            <button class="tablinks" onclick="openSection(event, 'Hydrogen')">Hydrogen Solutions</button>
+            <button class="tablinks" onclick="openSection(event, 'Resilience')">Oil Resilience & Constraints</button>
+            <button class="tablinks" onclick="openSection(event, 'Timeline')">Transition Timeline</button>
+            <button class="tablinks" onclick="openSection(event, 'WorksCited')">Works Cited</button>
+        </div>
+
+        <div id="Overview" class="tabcontent">
+            <h2>The Great Energy Divergence</h2>
+            <p>The global energy landscape in 2026 is defined by a profound and widening rift between two competing realities. On one side, the established fossil fuel economy continues to demonstrate remarkable structural resilience, underpinned by a massive existing infrastructure and the burgeoning energy needs of emerging economies. On the other, a rapidly accelerating low-emissions transition, driven by the dual engines of vehicle electrification and hydrogen technology, is beginning to exert unprecedented pressure on the historical dominance of crude oil.</p>
+            <p>This period has been punctuated by acute geopolitical volatility, most notably the tanker squeeze in the Strait of Hormuz during early 2026, which propelled crude oil prices toward the $100 mark and served as a catalyst for a "system break" in the internal combustion engine (ICE) industry. This report examines the intricate interplay between these forces, analyzing the specific impact of electric vehicles (EVs) and hydrogen on crude oil demand, and evaluates the feasibility of a complete energy transition within the framework of the 2050 Net Zero goals.</p>
+
+            <h3>The Paradigm Shift in Oil Demand Projections</h3>
+            <p>The central question facing global energy analysts is no longer whether oil demand will peak, but when it will peak and how sharp the subsequent decline will be. This assessment is complicated by a fundamental disagreement between the world’s most influential energy organizations.</p>
+            <p>The International Energy Agency (IEA), through its World Energy Outlook 2025, maintains that the "Age of Electricity" is now irreversible, projecting that global oil demand will flatten by the end of the 2020s under the Stated Policies Scenario (STEPS) as clean energy technologies reach mass-market scale. In contrast, the Organization of the Petroleum Exporting Countries (OPEC) argues that such projections are a "fantasy," instead forecasting that global oil demand will continue to
