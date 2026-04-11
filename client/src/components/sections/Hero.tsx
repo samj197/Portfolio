@@ -29,9 +29,9 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="lg:col-span-8 text-center lg:text-left space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
+          <div className="lg:col-span-8 text-center lg:text-left space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 bg-background/70 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-white/10 shadow-2xl">
             <div className="space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground drop-shadow-sm">
                 Samvid Jadhav
               </h1>
               <h2 className="text-xl sm:text-2xl font-medium text-muted-foreground">
