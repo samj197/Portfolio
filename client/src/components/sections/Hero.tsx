@@ -40,7 +40,7 @@ export default function Hero() {
             </div>
             
             <p className="text-lg max-w-2xl mx-auto lg:mx-0 text-muted-foreground">
-              Results-driven professional with proven expertise in business intelligence, client acquisition, market research, and sales operations.
+              Results-driven Business Development and Marketing professional with over 3 years of experience in business intelligence, client acquisition, market research, and sales operations.
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-medium text-muted-foreground pt-2">
