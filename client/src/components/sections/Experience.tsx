@@ -3,14 +3,14 @@ import { Briefcase } from "lucide-react";
 export default function Experience() {
   const experiences = [
     {
-      title: "Export Research Associate",
-      company: "EA Immigrations Ltd | Remote",
+      title: "International Business Development & E-commerce Consultant",
+      company: "EA Immigrations | UK Market Specialist",
       period: "May 2024 – Present",
       achievements: [
-        "Researched and identified UK importers and distributors for Indian engineering goods and bulk FMCG products.",
-        "Analysed import trends, HS codes, and pricing benchmarks to support market entry.",
-        "Generated and qualified B2B leads through trade databases and outreach.",
-        "Supported Indian exporters with buyer insights and go-to-market recommendations."
+        "Supported Indian exporters in UK market entry and expansion, combining business development, Amazon launches, and digital marketing.",
+        "Onboarded 15+ UK buyers/distributors and launched products on Amazon UK, driving 40–65% sales growth within 3–6 months.",
+        "Executed data-driven campaigns across Meta & Google, reducing customer acquisition costs by 25–35%.",
+        "Conducted market research, pricing strategy, and managed cross-border operations to ensure successful go-to-market execution."
       ]
     },
     {
