@@ -13,7 +13,7 @@ export default function Hero() {
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
