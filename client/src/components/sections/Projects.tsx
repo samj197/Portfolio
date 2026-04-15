@@ -51,6 +51,18 @@ export default function Projects() {
       linkText: "View Interactive Dashboard"
     },
     {
+      title: "E-Commerce Strategic Analytics Dashboard",
+      subtitle: "Customer Behavior & Business Intelligence",
+      icon: <Presentation className="w-6 h-6" />,
+      bullets: [
+        "Analysed transactional data to segment customers by CLV tiers, uncovering high-value retention opportunities.",
+        "Built an interactive dashboard tracking revenue trajectory, cart abandonment, AOV, and repeat rate KPIs.",
+        "Mapped category performance, device, age, and traffic source segments to inform strategic planning."
+      ],
+      link: "/ecommerce-dashboard.html",
+      linkText: "View Interactive Dashboard"
+    },
+    {
       title: "Predictive Retail Revenue Forecast",
       subtitle: "Predictive Analytics",
       icon: <Lightbulb className="w-6 h-6" />,

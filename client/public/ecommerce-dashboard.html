@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Strategic Analytics Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Chosen Palette: Ocean & Emerald (Teal, Slate, Emerald, Blue) -->
+    <!-- Application Structure Plan: Top-down architecture. 
+         1. Interactive Global Filter (CLV Tier).
+         2. Executive KPIs (Exact sums for Total Orders and Total Revenue).
+         3. Temporal Trends (Chronological area chart mapping actual revenue with dynamic Year/Quarter/Month slicing).
+         4. Audience & Behavioral Segmentations (Category ranked by Revenue/Orders, Age, Device, Source).
+         5. Strategic Planning (Project Charter & Actions). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 800: '#1e293b', 900: '#0f172a' },
+                        teal: { 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e' },
+                        emerald: { 500: '#10b981' },
+                        blue: { 500: '#3b82f6' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; }
+        
+        .chart-container {
+            position: relative; width: 100%; max-width: 100%; margin: 0 auto; height: 300px; max-height: 400px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        
+        .chart-container-wide {
+            position: relative; width: 100%; height: 350px; max-height: 450px;
+        }
+
+        .glass-card {
+            background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="text-5xl animate-spin mb-4">⏳</div>
+        <h2 id="loading-text" class="text-3xl font-extrabold text-slate-800 mb-2">Reading CSV Data...</h2>
+        <p class="text-slate-500 font-medium text-lg">Aggregating actual dashboard metrics.</p>
+    </div>
+
+    <nav class="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📊</span>
+                    <span class="font-bold text-xl tracking-tight text-teal-500">E-Commerce<span class="text-white"> Intel</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <button onclick="document.getElementById('overview').scrollIntoView()" class="hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-colors">Overview</button>
+                        <button onclick="document.getElementById('analytics').scrollIntoView()" class="hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-colors">Analytics & Trends</button>
+                        <button onclick="document.getElementById('strategy').scrollIntoView()" class="hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium transition-colors">Strategy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Upload Fallback Banner (Hidden by default) -->
+        <div id="file-upload-container" class="hidden mb-8 flex flex-col sm:flex-row items-center justify-between bg-teal-50 p-4 rounded-lg border border-teal-200 shadow-sm">
+            <div>
+                <h3 class="text-sm font-bold text-teal-900">⚠️ Displaying Sample Data</h3>
+                <p class="text-xs text-teal-700">Automatic loading was blocked by your browser. Please select your <strong>ecommerce_data.csv</strong> file to view your real data.</p>
+            </div>
+            <input type="file" id="csv-file-input" accept=".csv" class="mt-3 sm:mt-0 block w-full sm:w-auto text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-700 cursor-pointer"/>
+        </div>
+
+        <header class="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
+            <div class="max-w-3xl">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Customer Behavior & Strategic Operations</h1>
+                <p class="text-lg text-slate-600">Comprehensive interactive analysis of transactional data and behavioral patterns. Use the filter below to explore data by Customer Lifetime Value (CLV) segments.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 w-full md:w-auto">
+                <label for="clvFilter" class="block text-sm font-bold text-slate-700 mb-1">Interactive Filter: CLV Tier</label>
+                <select id="clvFilter" class="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md bg-slate-50 border cursor-pointer">
+                    <option value="All">All Customers (Unfiltered)</option>
+                    <option value="high">High CLV Segment</option>
+                    <option value="medium">Medium CLV Segment</option>
+                    <option value="low">Low CLV Segment</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- SECTION: Overview / KPIs -->
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-teal-600">📈</span> Executive KPIs
+                </h2>
+                <p class="text-slate-600 mt-1">High-level performance indicators aggregating exact volume and revenue from your data.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                
+                <div class="glass-card p-5 border-t-4 border-t-teal-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Total Revenue</p>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl lg:text-3xl font-extrabold text-slate-900" id="kpi-revenue">...</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 border-t-4 border-t-blue-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Total Unique Orders</p>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl lg:text-3xl font-extrabold text-slate-900" id="kpi-orders">...</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 border-t-4 border-t-emerald-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Avg. Order Value (AOV)</p>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl lg:text-3xl font-extrabold text-slate-900" id="kpi-aov">...</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 border-t-4 border-t-indigo-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Customer Repeat Rate</p>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl lg:text-3xl font-extrabold text-slate-900" id="kpi-repeat">...</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 border-t-4 border-t-red-500">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Cart Abandonment</p>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl lg:text-3xl font-extrabold text-slate-900" id="kpi-abandon">...</span>
+                        <span class="text-xs font-semibold text-red-500" id="kpi-abandon-status">Crit</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: Analytics & Temporal Trends -->
+        <section id="analytics" class="mb-16 scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-teal-600">📊</span> Temporal Trends & Categories
+                </h2>
+                <p class="text-slate-600 mt-1">Analyzing how revenue accrues over time with dynamic slicing, and mapping out the highest performing product categories.</p>
+            </div>
+
+            <!-- Revenue Trajectory Chart (Full Width with Slicer and Filter) -->
+            <div class="glass-card p-6 mb-8">
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-4 gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Revenue Trajectory</h3>
+                        <p class="text-sm text-slate-500">Chronological distribution of revenue (USD) based on order dates.</p>
+                    </div>
+                    <!-- Controls: Category Filter & Time Granularity Slicer -->
+                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full xl:w-auto">
+                        <select id="trajectoryCategoryFilter" class="block w-full sm:w-auto pl-3 pr-8 py-1.5 text-sm border-slate-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 rounded-md bg-white border cursor-pointer text-slate-700 shadow-sm">
+                            <option value="All">All Categories</option>
+                        </select>
+                        <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-full sm:w-auto justify-between sm:justify-start">
+                            <button class="time-slicer px-4 py-1.5 text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all flex-1 sm:flex-none text-center" data-chart="temporal" data-granularity="year">Years</button>
+                            <button class="time-slicer px-4 py-1.5 text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all flex-1 sm:flex-none text-center" data-chart="temporal" data-granularity="quarter">Quarters</button>
+                            <button class="time-slicer px-4 py-1.5 text-sm rounded-md font-medium bg-white text-teal-600 shadow-sm border border-slate-200 transition-all flex-1 sm:flex-none text-center" data-chart="temporal" data-granularity="month">Months</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container-wide">
+                    <canvas id="temporalChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Category Contribution (100% Stacked Bar) -->
+            <div class="glass-card p-6 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Category Contribution Analysis</h3>
+                        <p class="text-sm text-slate-500">A 100% stacked comparison revealing how each product category contributes to overall Revenue versus Order Volume. Hover for absolute values.</p>
+                    </div>
+                </div>
+                <div class="chart-container-wide" style="height: 250px; max-height: 250px;">
+                    <canvas id="categoryContributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="glass-card p-6 flex flex-col">
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Acquisition Efficiency</h3>
+                    <p class="text-sm text-slate-500 mb-4">Distribution by initial traffic source.</p>
+                    <div class="chart-container flex-1">
+                        <canvas id="sourceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col">
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Age Cohort Distribution</h3>
+                    <p class="text-sm text-slate-500 mb-4">Distinct customers segmented by age bracket.</p>
+                    <div class="chart-container flex-1">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col">
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Platform Preference</h3>
+                    <p class="text-sm text-slate-500 mb-4">Dominant ordering devices (Mobile vs Desktop).</p>
+                    <div class="chart-container flex-1">
+                        <canvas id="deviceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Strategy -->
+        <section id="strategy" class="mb-16 scroll-mt-20">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-teal-600">🎯</span> Strategic Planning
+                </h2>
+                <p class="text-slate-600 mt-1">A formalized project charter and actionable improvement measures derived directly from the analytical findings.</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-xl p-8 shadow-xl text-white mb-8 border border-slate-800">
+                <div class="border-b border-slate-700 pb-4 mb-6">
+                    <h3 class="text-2xl font-extrabold text-teal-400">Project Charter: Project Catalyst</h3>
+                    <p class="text-slate-400 text-sm mt-1">Initiative to maximize CLV and minimize funnel friction based on dataset parameters.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-300 uppercase tracking-widest mb-2">Objective</h4>
+                        <p class="text-slate-100 bg-slate-800 p-4 rounded-lg border border-slate-700 leading-relaxed text-sm">
+                            To utilize behavioral and transactional data to identify key bottlenecks in the e-commerce funnel, specifically targeting high cart abandonment rates, and to deploy UX and marketing interventions aiming to increase Average Order Value (AOV) and overall revenue.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-300 uppercase tracking-widest mb-2">Scope & Stakeholders</h4>
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <ul class="text-slate-100 text-sm space-y-2 mb-4 list-disc pl-4">
+                                <li><strong>In Scope:</strong> Mobile checkout redesign, automated cart recovery systems, loyalty tier structuring.</li>
+                                <li><strong>Out of Scope:</strong> Supply chain logistics, backend inventory management systems.</li>
+                            </ul>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="bg-slate-700 p-2 rounded text-center"><strong>Sponsor:</strong> CMO</div>
+                                <div class="bg-slate-700 p-2 rounded text-center"><strong>Execution:</strong> UX & Dev</div>
+                                <div class="bg-slate-700 p-2 rounded text-center"><strong>Analysis:</strong> Data Team</div>
+                                <div class="bg-slate-700 p-2 rounded text-center"><strong>Review:</strong> Q3 End</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-slate-900 mb-6">Prescribed Measures of Improvement</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
+                    <div class="text-3xl mb-3">🛒</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-1">Cart Recovery Automation</h4>
+                    <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded font-bold mb-3">Priority: HIGH</span>
+                    <p class="text-sm text-slate-600 mb-2"><strong>Data Context:</strong> Cart abandonment acts as a significant revenue blocker.</p>
+                    <p class="text-sm text-slate-600"><strong>Action:</strong> Implement a multi-stage triggered email and SMS sequence at 1hr, 12hr, and 24hr marks post-abandonment, offering tiered incentives based on basket value.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
+                    <div class="text-3xl mb-3">📱</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-1">Mobile Friction Reduction</h4>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold mb-3">Priority: HIGH</span>
+                    <p class="text-sm text-slate-600 mb-2"><strong>Data Context:</strong> Mobile devices dictate a massive portion of ordering sessions.</p>
+                    <p class="text-sm text-slate-600"><strong>Action:</strong> Audit the mobile checkout DOM. Integrate Apple Pay and Google Pay to bypass manual form entry. Reduce required form fields by 30% for guest checkouts.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-teal-500"></div>
+                    <div class="text-3xl mb-3">⭐</div>
+                    <h4 class="font-bold text-lg text-slate-900 mb-1">CLV Tier Gamification</h4>
+                    <span class="inline-block bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded font-bold mb-3">Priority: MED</span>
+                    <p class="text-sm text-slate-600 mb-2"><strong>Data Context:</strong> Significant revenue potential exists in nurturing lower/mid CLV tiers.</p>
+                    <p class="text-sm text-slate-600"><strong>Action:</strong> Launch a progressive loyalty program. Offer exclusive early access to top categories to incentivize Medium CLV users to reach High CLV spend thresholds.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        let rawData = [];
+        let chartInstances = {};
+        
+        // State variables
+        let currentTemporalGranularity = 'month';
+        let currentTrajectoryCategory = 'All'; 
+
+        const parseNum = (val) => {
+            const num = parseFloat(val);
+            return isNaN(num) ? 0 : num;
+        };
+
+        // Standardizes boolean parsing to avoid CSV format errors
+        const isTrue = (val) => {
+            if (val === 1 || val === true) return true;
+            if (typeof val === 'string') {
+                const lower = val.trim().toLowerCase();
+                return lower === '1' || lower === 'true' || lower === 'yes';
+            }
+            return false;
+        };
+
+        // --- DATA AGGREGATION ENGINE (Processing actual CSV rows) ---
+        const aggregateData = (data) => {
+            const metrics = { totalSpend: 0, totalOrders: 0, repeatCount: 0, abandonCount: 0, count: data.length };
+            const dists = { age: {}, device: {}, category: {}, source: {}, temporalRevenue: {} };
+
+            data.forEach(row => {
+                // KPIs
+                const spend = parseNum(row.total_spend_usd);
+                const orders = parseInt(row.total_orders) || 0;
+                metrics.totalSpend += spend;
+                metrics.totalOrders += orders;
+                
+                if (isTrue(row.is_repeat_customer)) metrics.repeatCount++;
+                if (isTrue(row.has_abandoned_cart)) metrics.abandonCount++;
+
+                // Demographics & Distributions
+                if(row.age_group) dists.age[row.age_group] = (dists.age[row.age_group] || 0) + 1;
+                if(row.preferred_device_ord) dists.device[row.preferred_device_ord] = (dists.device[row.preferred_device_ord] || 0) + 1;
+                if(row.preferred_source) dists.source[row.preferred_source] = (dists.source[row.preferred_source] || 0) + 1;
+
+                // Category Matrix Aggregation
+                if (row.top_category_bought) {
+                    const cat = row.top_category_bought;
+                    if (!dists.category[cat]) {
+                        dists.category[cat] = { revenue: 0, orders: 0 };
+                    }
+                    dists.category[cat].revenue += spend;
+                    dists.category[cat].orders += orders;
+                }
+
+                // Temporal Aggregation
+                if (row.last_order_date) {
+                    // Filter by trajectory specific category if selected
+                    if (currentTrajectoryCategory === 'All' || row.top_category_bought === currentTrajectoryCategory) {
+                        const dateStr = String(row.last_order_date).split('T')[0]; // Extract YYYY-MM-DD
+                        const dateParts = dateStr.split('-');
+                        
+                        if(dateParts.length >= 2) {
+                            const year = dateParts[0];
+                            const monthNum = parseInt(dateParts[1], 10);
+                            
+                            if (!isNaN(year) && !isNaN(monthNum)) {
+                                let timeKey;
+                                if (currentTemporalGranularity === 'year') {
+                                    timeKey = `${year}`;
+                                } else if (currentTemporalGranularity === 'quarter') {
+                                    const quarter = Math.ceil(monthNum / 3);
+                                    timeKey = `${year}-Q${quarter}`;
+                                } else {
+                                    const monthStr = String(monthNum).padStart(2, '0');
+                                    timeKey = `${year}-${monthStr}`;
+                                }
+                                dists.temporalRevenue[timeKey] = (dists.temporalRevenue[timeKey] || 0) + spend;
+                            }
+                        }
+                    }
+                }
+            });
+
+            const temporalLabels = Object.keys(dists.temporalRevenue).sort();
+            return { metrics, dists, temporalLabels };
+        };
+
+        const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+        const formatNumber = (val) => new Intl.NumberFormat('en-US').format(val);
+        const formatPercent = (val) => (val * 100).toFixed(1) + '%';
+
+        const updateKPIs = (metrics) => {
+            document.getElementById('kpi-revenue').textContent = formatCurrency(metrics.totalSpend);
+            document.getElementById('kpi-orders').textContent = formatNumber(metrics.totalOrders);
+            document.getElementById('kpi-aov').textContent = formatCurrency(metrics.totalSpend / Math.max(1, metrics.totalOrders));
+            document.getElementById('kpi-repeat').textContent = formatPercent(metrics.repeatCount / Math.max(1, metrics.count));
+            
+            const abandonRate = metrics.abandonCount / Math.max(1, metrics.count);
+            document.getElementById('kpi-abandon').textContent = formatPercent(abandonRate);
+            
+            const abandonStatusEl = document.getElementById('kpi-abandon-status');
+            if (abandonRate > 0.35) {
+                abandonStatusEl.textContent = 'Critical';
+                abandonStatusEl.className = 'text-xs font-semibold text-red-600 mt-1';
+            } else if (abandonRate > 0.25) {
+                abandonStatusEl.textContent = 'Warning';
+                abandonStatusEl.className = 'text-xs font-semibold text-orange-500 mt-1';
+            } else {
+                abandonStatusEl.textContent = 'Healthy';
+                abandonStatusEl.className = 'text-xs font-semibold text-emerald-500 mt-1';
+            }
+        };
+
+        Chart.defaults.font.family = "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        const renderCharts = (dists, temporalLabels) => {
+            const chartConfig = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } }
+            };
+
+            // 1. Dynamic Temporal Chart
+            if (chartInstances.temporal) chartInstances.temporal.destroy();
+            chartInstances.temporal = new Chart(document.getElementById('temporalChart'), {
+                type: 'line',
+                data: {
+                    labels: temporalLabels,
+                    datasets: [{
+                        label: 'Revenue (USD)',
+                        data: temporalLabels.map(t => dists.temporalRevenue[t]),
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.15)',
+                        borderWidth: 2, fill: true, tension: 0.3,
+                        pointBackgroundColor: '#0ea5e9', pointRadius: 3, pointHoverRadius: 6
+                    }]
+                },
+                options: { 
+                    ...chartConfig, 
+                    scales: { 
+                        y: { beginAtZero: true, ticks: { callback: function(value) { return '$' + value.toLocaleString(); } }, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function(context) { return formatCurrency(context.raw); } } }
+                    }
+                }
+            });
+
+            // 2. Category Contribution (100% Stacked Bar)
+            let totalCatRev = 0;
+            let totalCatOrd = 0;
+            Object.values(dists.category).forEach(val => {
+                totalCatRev += val.revenue;
+                totalCatOrd += val.orders;
+            });
+
+            const sortedCats = Object.entries(dists.category)
+                .sort((a, b) => b[1].revenue - a[1].revenue);
+
+            // Group into Top 8 + 'Other' to keep the stacked chart legible
+            const topCats = sortedCats.slice(0, 8);
+            const otherCats = sortedCats.slice(8);
+            
+            let stackedDatasets = [];
+            const stackColors = ['#10b981', '#14b8a6', '#0ea5e9', '#6366f1', '#8b5cf6', '#f59e0b', '#ec4899', '#f43f5e'];
+
+            topCats.forEach((item, index) => {
+                const catName = item[0];
+                const revPct = totalCatRev > 0 ? (item[1].revenue / totalCatRev) * 100 : 0;
+                const ordPct = totalCatOrd > 0 ? (item[1].orders / totalCatOrd) * 100 : 0;
+                
+                stackedDatasets.push({
+                    label: catName,
+                    data: [revPct, ordPct],
+                    backgroundColor: stackColors[index % stackColors.length],
+                    rawVals: [item[1].revenue, item[1].orders] // Inject raw data for tooltips
+                });
+            });
+
+            if (otherCats.length > 0) {
+                let otherRev = 0; let otherOrd = 0;
+                otherCats.forEach(item => { otherRev += item[1].revenue; otherOrd += item[1].orders; });
+                const revPct = totalCatRev > 0 ? (otherRev / totalCatRev) * 100 : 0;
+                const ordPct = totalCatOrd > 0 ? (otherOrd / totalCatOrd) * 100 : 0;
+                
+                stackedDatasets.push({
+                    label: 'Other Categories',
+                    data: [revPct, ordPct],
+                    backgroundColor: '#cbd5e1',
+                    rawVals: [otherRev, otherOrd]
+                });
+            }
+
+            if (chartInstances.categoryContri) chartInstances.categoryContri.destroy();
+            chartInstances.categoryContri = new Chart(document.getElementById('categoryContributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Revenue Contribution', 'Order Vol. Contribution'],
+                    datasets: stackedDatasets
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal orientation
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const pctVal = context.raw.toFixed(1) + '%';
+                                    const isRev = context.dataIndex === 0;
+                                    const rawVal = context.dataset.rawVals[context.dataIndex];
+                                    const formattedRaw = isRev ? formatCurrency(rawVal) : formatNumber(rawVal) + ' Orders';
+                                    return `${context.dataset.label}: ${pctVal} (${formattedRaw})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            stacked: true, 
+                            max: 100, 
+                            ticks: { callback: v => v + '%' },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        y: { stacked: true, grid: { display: false } }
+                    }
+                }
+            });
+
+            // 3. Acquisition Source
+            if (chartInstances.source) chartInstances.source.destroy();
+            chartInstances.source = new Chart(document.getElementById('sourceChart'), {
+                type: 'polarArea',
+                data: {
+                    labels: Object.keys(dists.source).map(k => String(k).charAt(0).toUpperCase() + String(k).slice(1)),
+                    datasets: [{
+                        data: Object.values(dists.source),
+                        backgroundColor: ['rgba(20, 184, 166, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(139, 92, 246, 0.7)', 'rgba(245, 158, 11, 0.7)'],
+                        borderWidth: 1, borderColor: '#ffffff'
+                    }]
+                },
+                options: { ...chartConfig, scales: { r: { ticks: { display: false } } } }
+            });
+
+            // 4. Age Demographics
+            if (chartInstances.age) chartInstances.age.destroy();
+            chartInstances.age = new Chart(document.getElementById('ageChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(dists.age).sort(),
+                    datasets: [{
+                        label: 'Customers',
+                        data: Object.keys(dists.age).sort().map(k => dists.age[k]),
+                        backgroundColor: '#14b8a6', borderRadius: 4
+                    }]
+                },
+                options: { ...chartConfig, scales: { y: { beginAtZero: true } }, x: { grid: { display: false } } }
+            });
+
+            // 5. Device Preference
+            if (chartInstances.device) chartInstances.device.destroy();
+            chartInstances.device = new Chart(document.getElementById('deviceChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dists.device).map(k => String(k).charAt(0).toUpperCase() + String(k).slice(1)),
+                    datasets: [{
+                        data: Object.values(dists.device),
+                        backgroundColor: ['#0ea5e9', '#3b82f6', '#8b5cf6'],
+                        borderWidth: 2, borderColor: '#ffffff'
+                    }]
+                },
+                options: { ...chartConfig, cutout: '65%' }
+            });
+        };
+
+        const populateTrajectoryCategoryDropdown = (data) => {
+            const categories = new Set();
+            data.forEach(row => {
+                if (row.top_category_bought) categories.add(row.top_category_bought);
+            });
+            const select = document.getElementById('trajectoryCategoryFilter');
+            select.innerHTML = '<option value="All">All Categories</option>';
+            Array.from(categories).sort().forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                select.appendChild(opt);
+            });
+        };
+
+        const applyFilter = () => {
+            const filterValue = document.getElementById('clvFilter').value;
+            let filteredData = rawData;
+            
+            if (filterValue !== 'All') {
+                filteredData = rawData.filter(row => row.clv_tier === filterValue);
+            }
+
+            const { metrics, dists, temporalLabels } = aggregateData(filteredData);
+            updateKPIs(metrics);
+            renderCharts(dists, temporalLabels);
+        };
+
+        const processLoadedData = (data) => {
+            // Filter out empty lines that CSV parsers sometimes catch at EOF
+            rawData = data.filter(row => row.customer_id !== undefined && row.customer_id !== null);
+            populateTrajectoryCategoryDropdown(rawData);
+            applyFilter();
+
+            // Hide Loading Overlay smoothly
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 300);
+        };
+
+        // --- Mock Data Fallback Generator ---
+        const generateMockData = () => {
+            const data = [];
+            const ageGroups = ['18-24', '25-34', '35-44', '45-54', '55+'];
+            const categories = ['Fashion', 'Beauty', 'Electronics', 'Home & Garden', 'Sports'];
+            const clvTiers = ['high', 'medium', 'low'];
+            for (let i = 1; i <= 500; i++) {
+                data.push({
+                    customer_id: i,
+                    age_group: ageGroups[Math.floor(Math.random() * ageGroups.length)],
+                    preferred_device_ord: ['mobile', 'desktop', 'tablet'][Math.floor(Math.random() * 3)],
+                    preferred_source: ['organic', 'direct', 'email', 'social'][Math.floor(Math.random() * 4)],
+                    top_category_bought: categories[Math.floor(Math.random() * categories.length)],
+                    clv_tier: clvTiers[Math.floor(Math.random() * 3)],
+                    total_spend_usd: (Math.random() * 200) + 15,
+                    total_orders: Math.floor(Math.random() * 5) + 1,
+                    last_order_date: `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-15T12:00:00`,
+                    has_abandoned_cart: Math.random() > 0.6 ? 1 : 0, 
+                    is_repeat_customer: Math.random() > 0.5 ? 1 : 0
+                });
+            }
+            return data;
+        };
+
+        // --- INITIALIZATION & EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Attempt to fetch the CSV file automatically
+            fetch('ecommerce_data.csv')
+                .then(response => {
+                    if (!response.ok) throw new Error("File not found or CORS blocked");
+                    return response.text();
+                })
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        dynamicTyping: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            processLoadedData(results.data);
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.warn("Auto-fetch failed. Presenting file upload fallback.", err);
+                    // Load fallback data so the dashboard doesn't break
+                    processLoadedData(generateMockData());
+                    document.getElementById('file-upload-container').classList.remove('hidden');
+                });
+
+            // 2. Setup Manual Upload Listener
+            document.getElementById('csv-file-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                document.getElementById('loading-overlay').style.display = 'flex';
+                document.getElementById('loading-overlay').style.opacity = '1';
+                document.getElementById('loading-text').innerText = "Parsing uploaded file...";
+                
+                Papa.parse(file, {
+                    header: true, dynamicTyping: true, skipEmptyLines: true,
+                    complete: function(results) { 
+                        document.getElementById('file-upload-container').classList.add('hidden');
+                        processLoadedData(results.data); 
+                    }
+                });
+            });
+
+            // 3. Setup UI Filters
+            document.getElementById('clvFilter').addEventListener('change', applyFilter);
+
+            document.getElementById('trajectoryCategoryFilter').addEventListener('change', (e) => {
+                currentTrajectoryCategory = e.target.value;
+                applyFilter();
+            });
+            
+            // Setup Time Slicer Buttons
+            document.querySelectorAll('.time-slicer').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const granularity = e.target.getAttribute('data-granularity');
+                    document.querySelectorAll(`.time-slicer`).forEach(b => {
+                        b.classList.remove('bg-white', 'text-teal-600', 'shadow-sm', 'border', 'border-slate-200');
+                        b.classList.add('text-slate-600');
+                    });
+                    e.target.classList.add('bg-white', 'text-teal-600', 'shadow-sm', 'border', 'border-slate-200');
+                    e.target.classList.remove('text-slate-600');
+                    currentTemporalGranularity = granularity;
+                    applyFilter();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
