@@ -51,6 +51,18 @@ export default function Projects() {
       linkText: "View Interactive Dashboard"
     },
     {
+      title: "Burgernomics: Big Mac Index Explorer",
+      subtitle: "Macroeconomics & Currency Analysis",
+      icon: <Globe className="w-6 h-6" />,
+      bullets: [
+        "Applied Purchasing Power Parity (PPP) theory to map global currency over/undervaluation against the USD.",
+        "Built an interactive choropleth map with a time-slider spanning 1986–2025, revealing structural currency shifts.",
+        "Integrated sortable data table and historical trend charts enabling country-level deep-dives."
+      ],
+      link: "/big-mac-index.html",
+      linkText: "View Interactive Dashboard"
+    },
+    {
       title: "E-Commerce Strategic Analytics Dashboard",
       subtitle: "Customer Behavior & Business Intelligence",
       icon: <Presentation className="w-6 h-6" />,
