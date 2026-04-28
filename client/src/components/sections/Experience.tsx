@@ -14,16 +14,6 @@ export default function Experience() {
       ]
     },
     {
-      title: "Postgraduate Committee Chair",
-      company: "UEA Students' Union | Norwich, UK",
-      period: "Sep 2023 – Sep 2024",
-      achievements: [
-        "Set the postgraduate engagement strategy and partnered with the executive board to prioritise union-wide initiatives.",
-        "Designed and orchestrated networking and professional-development events serving 300+ students through targeted segmentation.",
-        "Evaluated funding proposals through a value-vs-impact framework to allocate budget toward highest-return academic and social initiatives."
-      ]
-    },
-    {
       title: "Business Development Consultant",
       company: "Suvira Energy | Mumbai, India",
       period: "Apr 2023 – Sep 2023",

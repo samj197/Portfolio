@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import Summary from "@/components/sections/Summary";
 import CoreCompetencies from "@/components/sections/CoreCompetencies";
 import Experience from "@/components/sections/Experience";
+import Leadership from "@/components/sections/Leadership";
 import Education from "@/components/sections/Education";
 import Projects from "@/components/sections/Projects";
 import Portfolio from "@/components/sections/Portfolio";
@@ -16,6 +17,7 @@ export default function Home() {
         <CoreCompetencies />
         <Portfolio />
         <Experience />
+        <Leadership />
         <Projects />
         <Education />
       </main>
