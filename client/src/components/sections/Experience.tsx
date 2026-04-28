@@ -7,10 +7,10 @@ export default function Experience() {
       company: "EA Immigrations | UK Market Specialist",
       period: "May 2024 – Present",
       achievements: [
-        "Supported Indian exporters in UK market entry and expansion, combining business development, Amazon launches, and digital marketing.",
-        "Onboarded 15+ UK buyers/distributors and launched products on Amazon UK, driving 40–65% sales growth within 3–6 months.",
-        "Executed data-driven campaigns across Meta & Google, reducing customer acquisition costs by 25–35%.",
-        "Conducted market research, pricing strategy, and managed cross-border operations to ensure successful go-to-market execution."
+        "Advised Indian SME exporters on UK market entry, owning the end-to-end growth thesis from segmentation through channel execution.",
+        "Structured the go-to-market playbook for 15+ UK buyers/distributors and Amazon UK launches, delivering 40–65% sales uplift within 3–6 months.",
+        "Architected data-driven Meta and Google performance campaigns, reducing customer acquisition cost by 25–35% through audience and creative optimisation.",
+        "Synthesised market sizing, competitor benchmarking, and pricing diagnostics to inform positioning decisions for cross-border SKUs."
       ]
     },
     {
@@ -18,9 +18,9 @@ export default function Experience() {
       company: "UEA Students' Union | Norwich, UK",
       period: "Sep 2023 – Sep 2024",
       achievements: [
-        "Led postgraduate community engagement strategy and worked with the board on strategic initiatives.",
-        "Organized networking and professional development events for over 300 students.",
-        "Reviewed and approved funding proposals to support academic and social initiatives."
+        "Set the postgraduate engagement strategy and partnered with the executive board to prioritise union-wide initiatives.",
+        "Designed and orchestrated networking and professional-development events serving 300+ students through targeted segmentation.",
+        "Evaluated funding proposals through a value-vs-impact framework to allocate budget toward highest-return academic and social initiatives."
       ]
     },
     {
@@ -28,9 +28,9 @@ export default function Experience() {
       company: "Suvira Energy | Mumbai, India",
       period: "Apr 2023 – Sep 2023",
       achievements: [
-        "Negotiated and secured an international $100,000 deal in the fuel additive sector.",
-        "Identified new B2B opportunities across Singapore and Hong Kong maritime industries.",
-        "Drafted tenders and proposals, increasing client onboarding by 30%."
+        "Closed a $100K international fuel-additive contract by structuring a tailored value proposition and navigating multi-party negotiation.",
+        "Identified and prioritised B2B pipeline opportunities across Singapore and Hong Kong maritime corridors using competitive analysis.",
+        "Authored tender responses and proposal frameworks that lifted client onboarding conversion by 30%."
       ]
     },
     {
@@ -38,10 +38,10 @@ export default function Experience() {
       company: "Mount Meru Millers | East Africa",
       period: "May 2022 – Mar 2023",
       achievements: [
-        "Managed export and B2B sales operations, achieving $2.8M in Q4 sales revenue.",
-        "Closed a $100K/month contract, increasing monthly revenue by 40%.",
-        "Implemented a go-to-market strategy for new edible oil products, generating $250K/month.",
-        "Optimized supply chain operations, resolving distribution inefficiencies."
+        "Owned full P&L for the East Africa cluster, delivering $2.8M in Q4 revenue against an aggressive growth target.",
+        "Structured a $100K/month recurring B2B contract that lifted monthly cluster revenue by 40%.",
+        "Defined and executed the go-to-market strategy for new edible-oil SKUs, generating $250K/month in incremental revenue.",
+        "Diagnosed distribution bottlenecks and reengineered supply-chain flows to remove operational friction across the region."
       ]
     },
     {
@@ -49,9 +49,9 @@ export default function Experience() {
       company: "Market Research Future | Pune, India",
       period: "Mar 2021 – Apr 2022",
       achievements: [
-        "Conduct competitive market analysis in ICT & Semiconductor domains for North American clients.",
-        "Created lead-focused marketing strategies, boosting report sales by $7,500.",
-        "Generated analytical insight reports for senior sales teams and delivered business presentations."
+        "Conducted competitive intelligence and market sizing across ICT and Semiconductor verticals for North American enterprise clients.",
+        "Designed lead-focused commercial strategies that drove $7,500 in incremental report sales within pilot accounts.",
+        "Synthesised analytical insight reports for senior sales leadership and presented findings to client-facing audiences."
       ]
     }
   ];

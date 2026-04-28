@@ -34,12 +34,12 @@ export default function Hero() {
                 Samvid Jadhav
               </h1>
               <h2 className="text-xl sm:text-2xl font-medium text-muted-foreground">
-                Business Development, Data & Marketing Professional
+                Strategy & Business Analyst | Data-Driven Growth Consultant
               </h2>
             </div>
             
             <p className="text-lg max-w-2xl mx-auto lg:mx-0 text-muted-foreground">
-              Results-driven Business Development and Marketing professional with over 3 years of experience in business intelligence, client acquisition, market research, and sales operations.
+              Hypothesis-driven analyst with 3+ years structuring ambiguous business problems and translating data into measurable commercial outcomes — across cross-border go-to-market, B2B revenue acceleration, and performance marketing.
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm font-medium text-muted-foreground pt-2">

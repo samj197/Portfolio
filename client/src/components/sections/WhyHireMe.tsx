@@ -9,9 +9,9 @@ export default function WhyHireMe() {
 
       <div className="relative z-10">
         <div className="text-center space-y-4 max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Why Hire Me?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">The Consulting Edge</h2>
           <p className="text-primary-foreground/80 text-lg">
-            I don't just maintain sales—I build scalable revenue engines and open new markets.
+            Three reasons I deliver disproportionate value on strategy, business analysis, and growth engagements.
           </p>
         </div>
 
@@ -20,9 +20,9 @@ export default function WhyHireMe() {
             <div className="w-12 h-12 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-6">
               <Zap className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold mb-3">Proven Revenue Generator</h3>
+            <h3 className="text-xl font-bold mb-3">Hypothesis-Driven Operator</h3>
             <p className="text-primary-foreground/80 leading-relaxed">
-              Consistently outperforming targets with a track record of driving 40% growth and managing $2.8M quarterly portfolios. I focus on high-ROI activities that immediately impact the bottom line.
+              I structure ambiguity into testable problems and translate analysis into measurable revenue lift — $2.8M quarterly P&L delivered, 40% revenue growth unlocked, 25–35% CAC reduction engineered.
             </p>
           </div>
 
@@ -30,9 +30,9 @@ export default function WhyHireMe() {
             <div className="w-12 h-12 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-6">
               <Award className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold mb-3">Dual Market Expertise</h3>
+            <h3 className="text-xl font-bold mb-3">Cross-Border Strategic Range</h3>
             <p className="text-primary-foreground/80 leading-relaxed">
-              Unique ability to command domestic FMCG distribution channels while also possessing the strategic acumen to execute international B2B deals, specifically bridging Indian exporters to the UK.
+              Equally fluent across UK go-to-market, East African FMCG distribution, and APAC B2B corridors. I bring the cultural fluency and commercial range that international advisory engagements demand.
             </p>
           </div>
 
@@ -40,9 +40,9 @@ export default function WhyHireMe() {
             <div className="w-12 h-12 rounded-xl bg-accent text-accent-foreground flex items-center justify-center mb-6">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold mb-3">Strategic Leadership</h3>
+            <h3 className="text-xl font-bold mb-3">Insight-to-Execution Bridge</h3>
             <p className="text-primary-foreground/80 leading-relaxed">
-              I don't just sell; I build teams. By upskilling 15+ frontline executives to achieve a 25% productivity boost, I create self-sustaining sales ecosystems that thrive long-term.
+              I sit at the intersection of data, commercial strategy, and stakeholder leadership — building reusable analytical playbooks and delivering C-suite-ready recommendations under tight deadlines.
             </p>
           </div>
         </div>
